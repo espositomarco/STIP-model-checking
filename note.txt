@@ -11,21 +11,21 @@ left                      right
            bottom
 
 from bottom
-vado dritto  :  (1 -1) (1 1) (top)
-giro a destra:  (1 -1) (1 1) (right)
+vado dritto   : (1 -1) (1 1) (top)
+giro a destra : (1 -1) (1 1) (right)
 giro a sinisra: (1 -1) (1 1) (-1 1) (left)
 
 from top
-vado dritto  :  (-1 1) (-1 -1) (bottom)
-giro a destra:  (-1 1) (-1 -1) (left)
+vado dritto   : (-1 1) (-1 -1) (bottom)
+giro a destra : (-1 1) (-1 -1) (left)
 giro a sinisra: (-1 1) (-1 -1) (-1 -1) (right)
 
 from right
-vado dritto  :  (1 1) (-1 1) (left)
-giro a destra:  (1 1) (-1 1) (top)
+vado dritto   : (1 1) (-1 1) (left)
+giro a destra : (1 1) (-1 1) (top)
 giro a sinisra: (1 1) (-1 1) (-1 -1) (bottom)
 
 from left
-vado dritto  :  (-1 -1) (1 -1) (right)
-giro a destra:  (-1 -1) (1 -1) (bottom)
+vado dritto   : (-1 -1) (1 -1) (right)
+giro a destra : (-1 -1) (1 -1) (bottom)
 giro a sinisra: (-1 -1) (1 -1) (1 1) (top)

@@ -1,0 +1,62 @@
+MODULE car(start, from_in, to_in)
+	VAR
+		-- trajectory cell list
+		tcl : array 0..2 of array 0..1 of integer;
+
+		from : {TOP, BOTTOM, RIGHT, LEFT};
+		to : {TOP, BOTTOM, RIGHT, LEFT};
+		
+		pos : array 0..1 of integer;
+		pos_index : 0..3;
+
+
+	
+	ASSIGN
+
+		init(from) := from_in;
+		init(to) := to_in;
+		init(pos_index) := 0;
+
+		init(tcl) := case
+			from=BOTTOM & to=TOP   : bottom_top;
+			from=BOTTOM & to=RIGHT : bottom_right;
+			from=BOTTOM & to=LEFT  : bottom_left;
+			from=TOP & to=BOTTOM   : top_bottom;
+			from=TOP & to=LEFT     : top_left;
+			from=TOP & to=RIGHT    : top_right;
+			from=RIGHT & to=LEFT   : right_left;
+			from=RIGHT & to=TOP    : right_top;
+			from=RIGHT & to=BOTTOM : right_bottom;
+			from=LEFT & to=RIGHT   : left_right;
+			from=LEFT & to=BOTTOM  : left_bottom;
+			from=LEFT & to=TOP     : left_top;
+		esac;
+
+		next(pos_index) := pos_index + 1;
+
+	DEFINE
+		bottom_top   := [ [1, -1] , [1, 1] , [ 1, 1] ];
+		bottom_right := [ [1, -1] , [1, 1] , [ 1, 1] ];
+		bottom_left  := [ [1, -1] , [1, 1] , [-1, 1] ];
+		top_bottom :=   [ [-1, 1] , [-1, -1] , [ -1, -1] ];
+		top_left  :=    [ [-1, 1] , [-1, -1] , [ -1, -1] ];
+		top_right  :=   [ [-1, 1] , [-1, -1] , [1, -1] ];
+		right_left :=   [ [1,1], [-1,1], [-1,1]];
+		right_top :=    [ [1,1], [-1,1], [-1,1]];
+		right_bottom := [ [1,1], [-1,1], [-1,-1]];
+		left_right :=   [ [-1,-1], [1,-1], [1,-1]];
+		left_bottom :=  [ [-1,-1], [1,-1], [1,-1]];
+		left_top :=     [ [-1,-1], [1,-1], [1,1]];
+
+	--FAIRNESS
+		--running;
+
+
+MODULE main
+	VAR
+		c1 : car(boh, BOTTOM, TOP);
+
+	DEFINE
+		boh :=  [1,-1];	
+
+		

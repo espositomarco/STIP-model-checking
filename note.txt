@@ -1,5 +1,5 @@
 Traiettorie possibili nel caso di una corsia per senso di marcia.
-Le griglia dell'incrocio 2x2, con coordinate da -1 a 1 (così si possono sfruttare
+La griglia dell'incrocio è 2x2, con coordinate da -1 a 1 (così si possono sfruttare
 più simmetrie rispetto al centro)
 
              top

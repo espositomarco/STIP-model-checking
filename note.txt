@@ -1,0 +1,31 @@
+Traiettorie possibili nel caso di una corsia per senso di marcia.
+Le griglia dell'incrocio 2x2, con coordinate da -1 a 1 (così si possono sfruttare
+più simmetrie rispetto al centro)
+
+             top
+          v         ∧    
+     < (-1  1)   ( 1  1) <
+left                      right
+     > (-1 -1)   ( 1 -1) >
+          v         ∧  
+           bottom
+
+from bottom
+vado dritto  :  (1 -1) (1 1) (top)
+giro a destra:  (1 -1) (1 1) (right)
+giro a sinisra: (1 -1) (1 1) (-1 1) (left)
+
+from top
+vado dritto  :  (-1 1) (-1 -1) (bottom)
+giro a destra:  (-1 1) (-1 -1) (left)
+giro a sinisra: (-1 1) (-1 -1) (-1 -1) (right)
+
+from right
+vado dritto  :  (1 1) (-1 1) (left)
+giro a destra:  (1 1) (-1 1) (top)
+giro a sinisra: (1 1) (-1 1) (-1 -1) (bottom)
+
+from left
+vado dritto  :  (-1 -1) (1 -1) (right)
+giro a destra:  (-1 -1) (1 -1) (bottom)
+giro a sinisra: (-1 -1) (1 -1) (1 1) (top)

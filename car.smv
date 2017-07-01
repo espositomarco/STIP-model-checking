@@ -1,62 +1,101 @@
-MODULE car(start, from_in, to_in)
-	VAR
-		-- trajectory cell list
-		tcl : array 0..2 of array 0..1 of integer;
+MODULE car(from_in, to_in, speed_in, distance_from_intersection)
+	DEFINE
+		-- size of the edge of each cell (meters)
+		cell_size := 5;
 
-		from : {TOP, BOTTOM, RIGHT, LEFT};
-		to : {TOP, BOTTOM, RIGHT, LEFT};
+		-- simulation step length (seconds)
+		--dt := 0.1;
+
+		-- number of lanes
+		L := 2;
+
+		-- max length of a tcl 
+		len := 2*L - 1 - 1;
+
+		-- simulation steps in a second
+		steps_per_second := 10;
+
+		-- max cell progress
+		max_progress := 100;
 		
-		pos : array 0..1 of integer;
-		pos_index : 0..3;
-
+		-- max speed (cell/max_progress per simulation step) (14m/s ~ 50 km/h)
+		max_speed := (max_progress * 14) / (cell_size * steps_per_second);
 
 	
-	ASSIGN
+	
+	FROZENVAR
+	-- forzenvars don't change in time
 
+		-- trajectory cell list (list of vec2)
+		tcl : array 0..len of array 0..1 of 1..L;
+		
+		-- list of time of arrival for each cell in tcl
+		-- tcl_time : array 0..len of array 0..1 of 0..L;
+
+		from : {BOTTOM, TOP, LEFT, RIGHT};
+		to: {BOTTOM, TOP, LEFT, RIGHT};
+	
+	VAR
+		-- current position in the intersection grid
+		position : array 0..1 of 0..L;
+
+		-- current speed in tenth of meters per second
+		speed : 0..max_speed;
+		
+		-- fraction of cell traveled. Reals are not allowed.
+		cell_progress : 0..max_progress;
+		
+		-- index pointing at current position in tcl
+		tcl_index : 0..len;
+
+
+
+	ASSIGN
+		-- INITIALIZATIONS --
 		init(from) := from_in;
 		init(to) := to_in;
-		init(pos_index) := 0;
+		
+		-- using a Python script to generate tcl initialization (it's parametric)
+		init(tcl[0][0]) := 2;
+		init(tcl[0][1]) := 1;
+		init(tcl[1][0]) := 2;
+		init(tcl[1][1]) := 2;
+		init(tcl[2][0]) := 1;
+		init(tcl[2][1]) := 2;
 
-		init(tcl) := case
-			from=BOTTOM & to=TOP   : bottom_top;
-			from=BOTTOM & to=RIGHT : bottom_right;
-			from=BOTTOM & to=LEFT  : bottom_left;
-			from=TOP & to=BOTTOM   : top_bottom;
-			from=TOP & to=LEFT     : top_left;
-			from=TOP & to=RIGHT    : top_right;
-			from=RIGHT & to=LEFT   : right_left;
-			from=RIGHT & to=TOP    : right_top;
-			from=RIGHT & to=BOTTOM : right_bottom;
-			from=LEFT & to=RIGHT   : left_right;
-			from=LEFT & to=BOTTOM  : left_bottom;
-			from=LEFT & to=TOP     : left_top;
+		-- also position init is parametric in from and to
+		init(position[0]) := tcl[0][0];
+		init(position[1]) := tcl[0][1];
+		init(speed) := speed_in;
+
+		init(tcl_index) := 0;
+		init(cell_progress) := 0;
+		-- also tcl_time should be initialized with a script
+		-- init(tcl_time) := get_initial_tcl_time(from, to, speed); -- pseudocode
+
+
+
+		-- SIMULATION --
+		next(speed) := speed;
+		next(tcl_index) := case
+			cell_progress + speed >  max_progress: min(tcl_index + 1, len);
+			cell_progress + speed <= max_progress: tcl_index;
+		esac;
+		
+		next(cell_progress) := case
+			cell_progress + speed > max_progress : min(cell_progress + speed  - max_progress, max_progress);
+			cell_progress + speed <= max_progress : min(cell_progress + speed, max_progress);
 		esac;
 
-		next(pos_index) := pos_index + 1;
-
-	DEFINE
-		bottom_top   := [ [1, -1] , [1, 1] , [ 1, 1] ];
-		bottom_right := [ [1, -1] , [1, 1] , [ 1, 1] ];
-		bottom_left  := [ [1, -1] , [1, 1] , [-1, 1] ];
-		top_bottom :=   [ [-1, 1] , [-1, -1] , [ -1, -1] ];
-		top_left  :=    [ [-1, 1] , [-1, -1] , [ -1, -1] ];
-		top_right  :=   [ [-1, 1] , [-1, -1] , [1, -1] ];
-		right_left :=   [ [1,1], [-1,1], [-1,1]];
-		right_top :=    [ [1,1], [-1,1], [-1,1]];
-		right_bottom := [ [1,1], [-1,1], [-1,-1]];
-		left_right :=   [ [-1,-1], [1,-1], [1,-1]];
-		left_bottom :=  [ [-1,-1], [1,-1], [1,-1]];
-		left_top :=     [ [-1,-1], [1,-1], [1,1]];
-
-	--FAIRNESS
-		--running;
+		next(position[0]) := tcl[tcl_index][0];
+		next(position[1]) := tcl[tcl_index][1];
 
 
 MODULE main
 	VAR
-		c1 : car(boh, BOTTOM, TOP);
+		c1 : car(BOTTOM, LEFT, 10, 0);
+	SPEC
+		AF (c1.position[0] = 1 & c1.position[1] = 1) 
 
-	DEFINE
-		boh :=  [1,-1];	
 
-		
+

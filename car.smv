@@ -9,8 +9,8 @@ MODULE car(from_in, to_in, speed_in, distance_from_intersection)
 		-- number of lanes
 		L := 2;
 
-		-- max length of a tcl 
-		len := 2*L - 1 - 1;
+		-- max length of a tcl -1 (trailing -1 is needed because array indexes start with 0)
+		len := (L + 1) - 1;
 
 		-- simulation steps in a second
 		steps_per_second := 10;
@@ -18,16 +18,16 @@ MODULE car(from_in, to_in, speed_in, distance_from_intersection)
 		-- max cell progress
 		max_progress := 100;
 		
-		-- max speed (cell/max_progress per simulation step) (14m/s ~ 50 km/h)
+		-- max speed (cell/max_progress per simulation step) (14 m/s ~ 50 km/h)
 		max_speed := (max_progress * 14) / (cell_size * steps_per_second);
 
-	
+		--positions := 1..(L*L);
 	
 	FROZENVAR
 	-- forzenvars don't change in time
 
 		-- trajectory cell list (list of vec2)
-		tcl : array 0..len of array 0..1 of 1..L;
+		tcl : array 0..len of 0..(L*L); -- 0 is out of intersection
 		
 		-- list of time of arrival for each cell in tcl
 		-- tcl_time : array 0..len of array 0..1 of 0..L;
@@ -37,7 +37,7 @@ MODULE car(from_in, to_in, speed_in, distance_from_intersection)
 	
 	VAR
 		-- current position in the intersection grid
-		position : array 0..1 of 0..L;
+		position : 0..(L*L); -- 0 is out of intersection
 
 		-- current speed in tenth of meters per second
 		speed : 0..max_speed;
@@ -56,20 +56,67 @@ MODULE car(from_in, to_in, speed_in, distance_from_intersection)
 		init(to) := to_in;
 		
 		-- using a Python script to generate tcl initialization (it's parametric)
-		init(tcl[0][0]) := 2;
-		init(tcl[0][1]) := 1;
-		init(tcl[1][0]) := 2;
-		init(tcl[1][1]) := 2;
-		init(tcl[2][0]) := 1;
-		init(tcl[2][1]) := 2;
+		init(tcl[0]) := case
+			from = BOTTOM & to = BOTTOM : 0;
+			from = TOP & to = TOP : 0;
+			from = RIGHT & to = RIGHT : 0;
+			from = LEFT & to = LEFT : 0;
+			from = BOTTOM & to = TOP : 4;
+			from = BOTTOM & to = RIGHT : 4;
+			from = BOTTOM & to = LEFT : 4;
+			from = TOP & to = BOTTOM : 1;
+			from = TOP & to = LEFT : 1;
+			from = TOP & to = RIGHT : 1;
+			from = RIGHT & to = LEFT : 2;
+			from = RIGHT & to = TOP : 2;
+			from = RIGHT & to = BOTTOM : 2;
+			from = LEFT & to = RIGHT : 3;
+			from = LEFT & to = BOTTOM : 3;
+			from = LEFT & to = TOP : 3;
+		esac;
+		init(tcl[1]) := case
+			from = BOTTOM & to = BOTTOM : 0;
+			from = TOP & to = TOP : 0;
+			from = RIGHT & to = RIGHT : 0;
+			from = LEFT & to = LEFT : 0;
+			from = BOTTOM & to = TOP : 2;
+			from = BOTTOM & to = RIGHT : 0;
+			from = BOTTOM & to = LEFT : 2;
+			from = TOP & to = BOTTOM : 3;
+			from = TOP & to = LEFT : 0;
+			from = TOP & to = RIGHT : 3;
+			from = RIGHT & to = LEFT : 1;
+			from = RIGHT & to = TOP : 0;
+			from = RIGHT & to = BOTTOM : 1;
+			from = LEFT & to = RIGHT : 4;
+			from = LEFT & to = BOTTOM : 0;
+			from = LEFT & to = TOP : 4;
+		esac;
+		init(tcl[2]) := case
+			from = BOTTOM & to = BOTTOM : 0;
+			from = TOP & to = TOP : 0;
+			from = RIGHT & to = RIGHT : 0;
+			from = LEFT & to = LEFT : 0;
+			from = BOTTOM & to = TOP : 0;
+			from = BOTTOM & to = RIGHT : 0;
+			from = BOTTOM & to = LEFT : 1;
+			from = TOP & to = BOTTOM : 0;
+			from = TOP & to = LEFT : 0;
+			from = TOP & to = RIGHT : 4;
+			from = RIGHT & to = LEFT : 0;
+			from = RIGHT & to = TOP : 0;
+			from = RIGHT & to = BOTTOM : 3;
+			from = LEFT & to = RIGHT : 0;
+			from = LEFT & to = BOTTOM : 0;
+			from = LEFT & to = TOP : 2;
+		esac;
 
-		-- also position init is parametric in from and to
-		init(position[0]) := tcl[0][0];
-		init(position[1]) := tcl[0][1];
+		init(position) := tcl[0];
 		init(speed) := speed_in;
 
 		init(tcl_index) := 0;
 		init(cell_progress) := 0;
+
 		-- also tcl_time should be initialized with a script
 		-- init(tcl_time) := get_initial_tcl_time(from, to, speed); -- pseudocode
 
@@ -87,15 +134,15 @@ MODULE car(from_in, to_in, speed_in, distance_from_intersection)
 			cell_progress + speed <= max_progress : min(cell_progress + speed, max_progress);
 		esac;
 
-		next(position[0]) := tcl[tcl_index][0];
-		next(position[1]) := tcl[tcl_index][1];
+		next(position) := tcl[tcl_index];
 
 
 MODULE main
 	VAR
-		c1 : car(BOTTOM, LEFT, 10, 0);
+		c1 : car(BOTTOM, TOP, 21, 0);
+		c2 : car(BOTTOM, LEFT, 7, 0);
 	SPEC
-		AF (c1.position[0] = 1 & c1.position[1] = 1) 
+		AG (c1.position != 0 & c2.position != 0 -> c1.position != c2.position) 
 
 
 

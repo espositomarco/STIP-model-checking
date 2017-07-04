@@ -1,0 +1,93 @@
+MODULE global
+	DEFINE
+		-- number of cars
+		N := 10;
+
+		-- size of the edge of each cell (meters)
+		cell_size := 5;
+
+		-- simulation step length (seconds)
+		--dt := 0.1;
+
+		-- number of lanes
+		L := 2;
+
+		-- max length of a tcl -1 (trailing -1 is needed because array indexes start with 0)
+		len := (L + 1) - 1;
+
+		-- simulation steps in a second
+		steps_per_second := 10;
+
+		-- max cell progress
+		max_progress := 100;
+		
+		-- max speed (cell/max_progress per simulation step) (14 m/s ~ 50 km/h)
+		--max_speed := (max_progress * 14) / (cell_size * steps_per_second);
+		max_speed := 20;
+
+		-- total number of cars
+		cars_count := 100;
+
+		-- max distance from intersection expressed in (cell length in meters)/max_progress
+		max_distance_from_intersection := max_progress;
+
+		max_time := 1000;
+
+
+
+
+MODULE cell(position_in)	
+	DEFINE
+		N := global.N;
+		L := global.L;
+		max_speed := global.max_speed;
+		max_progress := global.max_progress;
+		max_time := global.max_time;
+
+	FROZENVAR
+		position : 1..(L*L);
+
+	VAR
+
+		--cars : array 1..N of boolean;
+		inside_car : 0..N;
+		progress : 0..max_progress;
+		speeds : array 1..N of 0..max_speed;
+		froms : array 1..N of {BOTTOM, TOP, LEFT, RIGHT};
+		tos :   array 1..N of {BOTTOM, TOP, LEFT, RIGHT};
+		
+		enter_times : array 1..N of 1..max_time;
+		exit_times : array 1..N of 1..max_time;
+
+	ASSIGN
+
+		init(position) := position_in;
+		init(inside_car) := 0;
+		init(progress) := 0;
+		
+		< for I in 0..10
+		init(speed[I]) := 20; >
+
+		< for Index in 0..10
+		init(froms[I]) := {BOTTOM, UP, RIGHT, LEFT};>
+
+		< for Index in 0..10
+		init(tos[Index]) := {BOTTOM, UP, RIGHT, LEFT};>
+
+		next(speeds[inside_car]) := {1,2,3,4,5,6,7,8,9,10};
+
+		-- EVOLUTION --
+
+
+
+MODULE main
+	VAR
+		<for I in 1..4
+		cellI : cell(I);>
+
+
+
+
+
+
+

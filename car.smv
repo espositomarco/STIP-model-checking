@@ -1,4 +1,4 @@
-MODULE car(from_in, to_in, speed_in, distance_from_intersection)
+MODULE car(id_in, from_in, to_in, speed_in, distance_from_intersection_in)
 	DEFINE
 		-- size of the edge of each cell (meters)
 		cell_size := 5;
@@ -20,11 +20,19 @@ MODULE car(from_in, to_in, speed_in, distance_from_intersection)
 		
 		-- max speed (cell/max_progress per simulation step) (14 m/s ~ 50 km/h)
 		max_speed := (max_progress * 14) / (cell_size * steps_per_second);
+		
+		-- total number of cars
+		cars_count := 100;
 
-		--positions := 1..(L*L);
+		-- max distance from intersection expressed in (cell length in meters)/max_progress
+		max_distance_from_intersection := max_progress;
+
 	
 	FROZENVAR
 	-- forzenvars don't change in time
+		
+		-- car id. Used to compute priority.
+		id : 0..cars_count;
 
 		-- trajectory cell list (list of vec2)
 		tcl : array 0..len of 0..(L*L); -- 0 is out of intersection
@@ -33,7 +41,9 @@ MODULE car(from_in, to_in, speed_in, distance_from_intersection)
 		-- tcl_time : array 0..len of array 0..1 of 0..L;
 
 		from : {BOTTOM, TOP, LEFT, RIGHT};
-		to: {BOTTOM, TOP, LEFT, RIGHT};
+		to:    {BOTTOM, TOP, LEFT, RIGHT};
+
+		distance_from_intersection : 0..max_distance_from_intersection;
 	
 	VAR
 		-- current position in the intersection grid
@@ -52,8 +62,15 @@ MODULE car(from_in, to_in, speed_in, distance_from_intersection)
 
 	ASSIGN
 		-- INITIALIZATIONS --
+		init(id) := id_in;
 		init(from) := from_in;
-		init(to) := to_in;
+		--init(to) := to_in;
+		init(to) := case
+			from = BOTTOM : {TOP, LEFT, RIGHT};
+			from = TOP : {BOTTOM, LEFT, RIGHT};
+			from = LEFT : {BOTTOM, TOP, RIGHT};
+			from = RIGHT : {BOTTOM, TOP, LEFT};
+		esac;
 		
 		-- using a Python script to generate tcl initialization (it's parametric)
 		init(tcl[0]) := case
@@ -130,7 +147,7 @@ MODULE car(from_in, to_in, speed_in, distance_from_intersection)
 		esac;
 		
 		next(cell_progress) := case
-			cell_progress + speed > max_progress : min(cell_progress + speed  - max_progress, max_progress);
+			cell_progress + speed >  max_progress : min(cell_progress + speed  - max_progress, max_progress);
 			cell_progress + speed <= max_progress : min(cell_progress + speed, max_progress);
 		esac;
 
@@ -139,8 +156,8 @@ MODULE car(from_in, to_in, speed_in, distance_from_intersection)
 
 MODULE main
 	VAR
-		c1 : car(BOTTOM, TOP, 21, 0);
-		c2 : car(BOTTOM, LEFT, 7, 0);
+		c1 : car(1, BOTTOM, TOP, 7, 0);
+		c2 : car(2, RIGHT, LEFT, 21, 0);
 	SPEC
 		AG (c1.position != 0 & c2.position != 0 -> c1.position != c2.position) 
 

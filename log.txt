@@ -1,0 +1,880 @@
+*** This is NuSMV 2.6.0 (compiled on Wed Oct 14 15:32:58 2015)
+*** Enabled addons are: compass
+*** For more information on NuSMV see <http://nusmv.fbk.eu>
+*** or email to <nusmv-users@list.fbk.eu>.
+*** Please report bugs to <Please report bugs to <nusmv-users@fbk.eu>>
+
+*** Copyright (c) 2010-2014, Fondazione Bruno Kessler
+
+*** This version of NuSMV is linked to the CUDD library version 2.4.1
+*** Copyright (c) 1995-2004, Regents of the University of Colorado
+
+*** This version of NuSMV is linked to the MiniSat SAT solver. 
+*** See http://minisat.se/MiniSat.html
+*** Copyright (c) 2003-2006, Niklas Een, Niklas Sorensson
+*** Copyright (c) 2007-2010, Niklas Sorensson
+
+-- specification AF ((((car1.INSIDE & car2.INSIDE) & car1.position = car2.position) | ((car1.INSIDE & car3.INSIDE) & car1.position = car3.position)) | ((car3.INSIDE & car2.INSIDE) & car3.position = car2.position))  is false
+-- as demonstrated by the following execution sequence
+Trace Description: CTL Counterexample 
+Trace Type: Counterexample 
+  -> State: 1.1 <-
+    car1.id = 1
+    car1.tcl[0] = 0
+    car1.tcl[1] = 4
+    car1.tcl[2] = 2
+    car1.tcl[3] = 0
+    car1.from = BOTTOM
+    car1.to = TOP
+    car2.id = 2
+    car2.tcl[0] = 0
+    car2.tcl[1] = 3
+    car2.tcl[2] = 4
+    car2.tcl[3] = 0
+    car2.from = LEFT
+    car2.to = RIGHT
+    car3.id = 3
+    car3.tcl[0] = 0
+    car3.tcl[1] = 1
+    car3.tcl[2] = 3
+    car3.tcl[3] = 0
+    car3.from = TOP
+    car3.to = BOTTOM
+    INTERSECTION.position = 1
+    car1.speed = 15
+    car1.cell_progress = 0
+    car1.tcl_index = 0
+    car2.speed = 28
+    car2.cell_progress = 0
+    car2.tcl_index = 0
+    car3.speed = 1
+    car3.cell_progress = 0
+    car3.tcl_index = 0
+    car1.INSIDE = FALSE
+    car1.EXITED = FALSE
+    car1.APPROACHING = TRUE
+    car1.position = 0
+    car1.max_progress = 100
+    car1.dist_from_intersection = 100
+    car1.N = 100
+    car1.max_speed = 28
+    car1.max_cell_progress = 100
+    car1.steps_per_second = 10
+    car1.len = 2
+    car1.L = 2
+    car1.cell_size = 5
+    car2.INSIDE = FALSE
+    car2.EXITED = FALSE
+    car2.APPROACHING = TRUE
+    car2.position = 0
+    car2.max_progress = 100
+    car2.dist_from_intersection = 100
+    car2.N = 100
+    car2.max_speed = 28
+    car2.max_cell_progress = 100
+    car2.steps_per_second = 10
+    car2.len = 2
+    car2.L = 2
+    car2.cell_size = 5
+    car3.INSIDE = FALSE
+    car3.EXITED = FALSE
+    car3.APPROACHING = TRUE
+    car3.position = 0
+    car3.max_progress = 100
+    car3.dist_from_intersection = 100
+    car3.N = 100
+    car3.max_speed = 28
+    car3.max_cell_progress = 100
+    car3.steps_per_second = 10
+    car3.len = 2
+    car3.L = 2
+    car3.cell_size = 5
+    INTERSECTION.max_time = 1000
+    INTERSECTION.cars_count = 100
+    INTERSECTION.max_speed = 20
+    INTERSECTION.steps_per_second = 10
+    INTERSECTION.L = 2
+    INTERSECTION.cell_size = 5
+    INTERSECTION.N = 10
+  -> State: 1.2 <-
+    car1.cell_progress = 15
+    car2.speed = 25
+    car2.cell_progress = 28
+    car3.cell_progress = 1
+  -> State: 1.3 <-
+    car1.cell_progress = 30
+    car2.cell_progress = 53
+    car3.cell_progress = 2
+  -> State: 1.4 <-
+    car1.cell_progress = 45
+    car2.cell_progress = 78
+    car3.cell_progress = 3
+  -> State: 1.5 <-
+    car1.cell_progress = 60
+    car2.speed = 22
+    car2.cell_progress = 3
+    car2.tcl_index = 1
+    car3.cell_progress = 4
+    car2.INSIDE = TRUE
+    car2.APPROACHING = FALSE
+    car2.position = 3
+  -> State: 1.6 <-
+    car1.cell_progress = 75
+    car2.speed = 19
+    car2.cell_progress = 25
+    car3.cell_progress = 5
+  -> State: 1.7 <-
+    car1.cell_progress = 90
+    car2.speed = 16
+    car2.cell_progress = 44
+    car3.cell_progress = 6
+  -> State: 1.8 <-
+    car1.cell_progress = 5
+    car1.tcl_index = 1
+    car2.speed = 13
+    car2.cell_progress = 60
+    car3.cell_progress = 7
+    car1.INSIDE = TRUE
+    car1.APPROACHING = FALSE
+    car1.position = 4
+  -> State: 1.9 <-
+    car1.cell_progress = 20
+    car2.speed = 10
+    car2.cell_progress = 73
+    car3.cell_progress = 8
+  -> State: 1.10 <-
+    car1.cell_progress = 35
+    car2.speed = 7
+    car2.cell_progress = 83
+    car3.cell_progress = 9
+  -> State: 1.11 <-
+    car1.cell_progress = 50
+    car2.speed = 4
+    car2.cell_progress = 90
+    car3.cell_progress = 10
+  -> State: 1.12 <-
+    car1.cell_progress = 65
+    car2.speed = 1
+    car2.cell_progress = 94
+    car3.cell_progress = 11
+  -> State: 1.13 <-
+    car1.cell_progress = 80
+    car2.cell_progress = 95
+    car3.cell_progress = 12
+  -> State: 1.14 <-
+    car1.cell_progress = 95
+    car2.cell_progress = 96
+    car3.cell_progress = 13
+  -> State: 1.15 <-
+    car1.cell_progress = 10
+    car1.tcl_index = 2
+    car2.cell_progress = 97
+    car3.cell_progress = 14
+    car1.position = 2
+  -> State: 1.16 <-
+    car1.cell_progress = 25
+    car2.cell_progress = 98
+    car3.cell_progress = 15
+  -> State: 1.17 <-
+    car1.cell_progress = 40
+    car2.cell_progress = 99
+    car3.cell_progress = 16
+  -> State: 1.18 <-
+    car1.cell_progress = 55
+    car2.cell_progress = 100
+    car3.cell_progress = 17
+  -> State: 1.19 <-
+    car1.cell_progress = 70
+    car2.cell_progress = 1
+    car2.tcl_index = 2
+    car3.cell_progress = 18
+    car2.position = 4
+  -> State: 1.20 <-
+    car1.cell_progress = 85
+    car2.cell_progress = 2
+    car3.cell_progress = 19
+  -> State: 1.21 <-
+    car1.cell_progress = 100
+    car2.cell_progress = 3
+    car3.cell_progress = 20
+  -> State: 1.22 <-
+    car1.cell_progress = 15
+    car1.tcl_index = 3
+    car2.cell_progress = 4
+    car3.cell_progress = 21
+    car1.INSIDE = FALSE
+    car1.EXITED = TRUE
+    car1.position = 0
+  -> State: 1.23 <-
+    car2.cell_progress = 5
+    car3.cell_progress = 22
+  -> State: 1.24 <-
+    car2.cell_progress = 6
+    car3.cell_progress = 23
+  -> State: 1.25 <-
+    car2.cell_progress = 7
+    car3.cell_progress = 24
+  -> State: 1.26 <-
+    car2.cell_progress = 8
+    car3.cell_progress = 25
+  -> State: 1.27 <-
+    car2.cell_progress = 9
+    car3.cell_progress = 26
+  -> State: 1.28 <-
+    car2.cell_progress = 10
+    car3.cell_progress = 27
+  -> State: 1.29 <-
+    car2.cell_progress = 11
+    car3.cell_progress = 28
+  -> State: 1.30 <-
+    car2.cell_progress = 12
+    car3.cell_progress = 29
+  -> State: 1.31 <-
+    car2.cell_progress = 13
+    car3.cell_progress = 30
+  -> State: 1.32 <-
+    car2.cell_progress = 14
+    car3.cell_progress = 31
+  -> State: 1.33 <-
+    car2.cell_progress = 15
+    car3.cell_progress = 32
+  -> State: 1.34 <-
+    car2.cell_progress = 16
+    car3.cell_progress = 33
+  -> State: 1.35 <-
+    car2.cell_progress = 17
+    car3.cell_progress = 34
+  -> State: 1.36 <-
+    car2.cell_progress = 18
+    car3.cell_progress = 35
+  -> State: 1.37 <-
+    car2.cell_progress = 19
+    car3.cell_progress = 36
+  -> State: 1.38 <-
+    car2.cell_progress = 20
+    car3.cell_progress = 37
+  -> State: 1.39 <-
+    car2.cell_progress = 21
+    car3.cell_progress = 38
+  -> State: 1.40 <-
+    car2.cell_progress = 22
+    car3.cell_progress = 39
+  -> State: 1.41 <-
+    car2.cell_progress = 23
+    car3.cell_progress = 40
+  -> State: 1.42 <-
+    car2.cell_progress = 24
+    car3.cell_progress = 41
+  -> State: 1.43 <-
+    car2.cell_progress = 25
+    car3.cell_progress = 42
+  -> State: 1.44 <-
+    car2.cell_progress = 26
+    car3.cell_progress = 43
+  -> State: 1.45 <-
+    car2.cell_progress = 27
+    car3.cell_progress = 44
+  -> State: 1.46 <-
+    car2.cell_progress = 28
+    car3.cell_progress = 45
+  -> State: 1.47 <-
+    car2.cell_progress = 29
+    car3.cell_progress = 46
+  -> State: 1.48 <-
+    car2.cell_progress = 30
+    car3.cell_progress = 47
+  -> State: 1.49 <-
+    car2.cell_progress = 31
+    car3.cell_progress = 48
+  -> State: 1.50 <-
+    car2.cell_progress = 32
+    car3.cell_progress = 49
+  -> State: 1.51 <-
+    car2.cell_progress = 33
+    car3.cell_progress = 50
+  -> State: 1.52 <-
+    car2.cell_progress = 34
+    car3.cell_progress = 51
+  -> State: 1.53 <-
+    car2.cell_progress = 35
+    car3.cell_progress = 52
+  -> State: 1.54 <-
+    car2.cell_progress = 36
+    car3.cell_progress = 53
+  -> State: 1.55 <-
+    car2.cell_progress = 37
+    car3.cell_progress = 54
+  -> State: 1.56 <-
+    car2.cell_progress = 38
+    car3.cell_progress = 55
+  -> State: 1.57 <-
+    car2.cell_progress = 39
+    car3.cell_progress = 56
+  -> State: 1.58 <-
+    car2.cell_progress = 40
+    car3.cell_progress = 57
+  -> State: 1.59 <-
+    car2.cell_progress = 41
+    car3.cell_progress = 58
+  -> State: 1.60 <-
+    car2.cell_progress = 42
+    car3.cell_progress = 59
+  -> State: 1.61 <-
+    car2.cell_progress = 43
+    car3.cell_progress = 60
+  -> State: 1.62 <-
+    car2.cell_progress = 44
+    car3.cell_progress = 61
+  -> State: 1.63 <-
+    car2.cell_progress = 45
+    car3.cell_progress = 62
+  -> State: 1.64 <-
+    car2.cell_progress = 46
+    car3.cell_progress = 63
+  -> State: 1.65 <-
+    car2.cell_progress = 47
+    car3.cell_progress = 64
+  -> State: 1.66 <-
+    car2.cell_progress = 48
+    car3.cell_progress = 65
+  -> State: 1.67 <-
+    car2.cell_progress = 49
+    car3.cell_progress = 66
+  -> State: 1.68 <-
+    car2.cell_progress = 50
+    car3.cell_progress = 67
+  -> State: 1.69 <-
+    car2.cell_progress = 51
+    car3.cell_progress = 68
+  -> State: 1.70 <-
+    car2.cell_progress = 52
+    car3.cell_progress = 69
+  -> State: 1.71 <-
+    car2.cell_progress = 53
+    car3.cell_progress = 70
+  -> State: 1.72 <-
+    car2.cell_progress = 54
+    car3.cell_progress = 71
+  -> State: 1.73 <-
+    car2.cell_progress = 55
+    car3.cell_progress = 72
+  -> State: 1.74 <-
+    car2.cell_progress = 56
+    car3.cell_progress = 73
+  -> State: 1.75 <-
+    car2.cell_progress = 57
+    car3.cell_progress = 74
+  -> State: 1.76 <-
+    car2.cell_progress = 58
+    car3.cell_progress = 75
+  -> State: 1.77 <-
+    car2.cell_progress = 59
+    car3.cell_progress = 76
+  -> State: 1.78 <-
+    car2.cell_progress = 60
+    car3.cell_progress = 77
+  -> State: 1.79 <-
+    car2.cell_progress = 61
+    car3.cell_progress = 78
+  -> State: 1.80 <-
+    car2.cell_progress = 62
+    car3.cell_progress = 79
+  -> State: 1.81 <-
+    car2.cell_progress = 63
+    car3.cell_progress = 80
+  -> State: 1.82 <-
+    car2.cell_progress = 64
+    car3.cell_progress = 81
+  -> State: 1.83 <-
+    car2.cell_progress = 65
+    car3.cell_progress = 82
+  -> State: 1.84 <-
+    car2.cell_progress = 66
+    car3.cell_progress = 83
+  -> State: 1.85 <-
+    car2.cell_progress = 67
+    car3.cell_progress = 84
+  -> State: 1.86 <-
+    car2.cell_progress = 68
+    car3.cell_progress = 85
+  -> State: 1.87 <-
+    car2.cell_progress = 69
+    car3.cell_progress = 86
+  -> State: 1.88 <-
+    car2.cell_progress = 70
+    car3.cell_progress = 87
+  -> State: 1.89 <-
+    car2.cell_progress = 71
+    car3.cell_progress = 88
+  -> State: 1.90 <-
+    car2.cell_progress = 72
+    car3.cell_progress = 89
+  -> State: 1.91 <-
+    car2.cell_progress = 73
+    car3.cell_progress = 90
+  -> State: 1.92 <-
+    car2.cell_progress = 74
+    car3.cell_progress = 91
+  -> State: 1.93 <-
+    car2.cell_progress = 75
+    car3.cell_progress = 92
+  -> State: 1.94 <-
+    car2.cell_progress = 76
+    car3.cell_progress = 93
+  -> State: 1.95 <-
+    car2.cell_progress = 77
+    car3.cell_progress = 94
+  -> State: 1.96 <-
+    car2.cell_progress = 78
+    car3.cell_progress = 95
+  -> State: 1.97 <-
+    car2.cell_progress = 79
+    car3.cell_progress = 96
+  -> State: 1.98 <-
+    car2.cell_progress = 80
+    car3.cell_progress = 97
+  -> State: 1.99 <-
+    car2.cell_progress = 81
+    car3.cell_progress = 98
+  -> State: 1.100 <-
+    car2.cell_progress = 82
+    car3.cell_progress = 99
+  -> State: 1.101 <-
+    car2.cell_progress = 83
+    car3.cell_progress = 100
+  -> State: 1.102 <-
+    car2.cell_progress = 84
+    car3.cell_progress = 1
+    car3.tcl_index = 1
+    car3.INSIDE = TRUE
+    car3.APPROACHING = FALSE
+    car3.position = 1
+  -> State: 1.103 <-
+    car2.cell_progress = 85
+    car3.cell_progress = 2
+  -> State: 1.104 <-
+    car2.cell_progress = 86
+    car3.cell_progress = 3
+  -> State: 1.105 <-
+    car2.cell_progress = 87
+    car3.cell_progress = 4
+  -> State: 1.106 <-
+    car2.cell_progress = 88
+    car3.cell_progress = 5
+  -> State: 1.107 <-
+    car2.cell_progress = 89
+    car3.cell_progress = 6
+  -> State: 1.108 <-
+    car2.cell_progress = 90
+    car3.cell_progress = 7
+  -> State: 1.109 <-
+    car2.cell_progress = 91
+    car3.cell_progress = 8
+  -> State: 1.110 <-
+    car2.cell_progress = 92
+    car3.cell_progress = 9
+  -> State: 1.111 <-
+    car2.cell_progress = 93
+    car3.cell_progress = 10
+  -> State: 1.112 <-
+    car2.cell_progress = 94
+    car3.cell_progress = 11
+  -> State: 1.113 <-
+    car2.cell_progress = 95
+    car3.cell_progress = 12
+  -> State: 1.114 <-
+    car2.cell_progress = 96
+    car3.cell_progress = 13
+  -> State: 1.115 <-
+    car2.cell_progress = 97
+    car3.cell_progress = 14
+  -> State: 1.116 <-
+    car2.cell_progress = 98
+    car3.cell_progress = 15
+  -> State: 1.117 <-
+    car2.cell_progress = 99
+    car3.cell_progress = 16
+  -> State: 1.118 <-
+    car2.cell_progress = 100
+    car3.cell_progress = 17
+  -> State: 1.119 <-
+    car2.cell_progress = 1
+    car2.tcl_index = 3
+    car3.cell_progress = 18
+    car2.INSIDE = FALSE
+    car2.EXITED = TRUE
+    car2.position = 0
+  -> State: 1.120 <-
+    car3.cell_progress = 19
+  -> State: 1.121 <-
+    car3.cell_progress = 20
+  -> State: 1.122 <-
+    car3.cell_progress = 21
+  -> State: 1.123 <-
+    car3.cell_progress = 22
+  -> State: 1.124 <-
+    car3.cell_progress = 23
+  -> State: 1.125 <-
+    car3.cell_progress = 24
+  -> State: 1.126 <-
+    car3.cell_progress = 25
+  -> State: 1.127 <-
+    car3.cell_progress = 26
+  -> State: 1.128 <-
+    car3.cell_progress = 27
+  -> State: 1.129 <-
+    car3.cell_progress = 28
+  -> State: 1.130 <-
+    car3.cell_progress = 29
+  -> State: 1.131 <-
+    car3.cell_progress = 30
+  -> State: 1.132 <-
+    car3.cell_progress = 31
+  -> State: 1.133 <-
+    car3.cell_progress = 32
+  -> State: 1.134 <-
+    car3.cell_progress = 33
+  -> State: 1.135 <-
+    car3.cell_progress = 34
+  -> State: 1.136 <-
+    car3.cell_progress = 35
+  -> State: 1.137 <-
+    car3.cell_progress = 36
+  -> State: 1.138 <-
+    car3.cell_progress = 37
+  -> State: 1.139 <-
+    car3.cell_progress = 38
+  -> State: 1.140 <-
+    car3.cell_progress = 39
+  -> State: 1.141 <-
+    car3.cell_progress = 40
+  -> State: 1.142 <-
+    car3.cell_progress = 41
+  -> State: 1.143 <-
+    car3.cell_progress = 42
+  -> State: 1.144 <-
+    car3.cell_progress = 43
+  -> State: 1.145 <-
+    car3.cell_progress = 44
+  -> State: 1.146 <-
+    car3.cell_progress = 45
+  -> State: 1.147 <-
+    car3.cell_progress = 46
+  -> State: 1.148 <-
+    car3.cell_progress = 47
+  -> State: 1.149 <-
+    car3.cell_progress = 48
+  -> State: 1.150 <-
+    car3.cell_progress = 49
+  -> State: 1.151 <-
+    car3.cell_progress = 50
+  -> State: 1.152 <-
+    car3.cell_progress = 51
+  -> State: 1.153 <-
+    car3.cell_progress = 52
+  -> State: 1.154 <-
+    car3.cell_progress = 53
+  -> State: 1.155 <-
+    car3.cell_progress = 54
+  -> State: 1.156 <-
+    car3.cell_progress = 55
+  -> State: 1.157 <-
+    car3.cell_progress = 56
+  -> State: 1.158 <-
+    car3.cell_progress = 57
+  -> State: 1.159 <-
+    car3.cell_progress = 58
+  -> State: 1.160 <-
+    car3.cell_progress = 59
+  -> State: 1.161 <-
+    car3.cell_progress = 60
+  -> State: 1.162 <-
+    car3.cell_progress = 61
+  -> State: 1.163 <-
+    car3.cell_progress = 62
+  -> State: 1.164 <-
+    car3.cell_progress = 63
+  -> State: 1.165 <-
+    car3.cell_progress = 64
+  -> State: 1.166 <-
+    car3.cell_progress = 65
+  -> State: 1.167 <-
+    car3.cell_progress = 66
+  -> State: 1.168 <-
+    car3.cell_progress = 67
+  -> State: 1.169 <-
+    car3.cell_progress = 68
+  -> State: 1.170 <-
+    car3.cell_progress = 69
+  -> State: 1.171 <-
+    car3.cell_progress = 70
+  -> State: 1.172 <-
+    car3.cell_progress = 71
+  -> State: 1.173 <-
+    car3.cell_progress = 72
+  -> State: 1.174 <-
+    car3.cell_progress = 73
+  -> State: 1.175 <-
+    car3.cell_progress = 74
+  -> State: 1.176 <-
+    car3.cell_progress = 75
+  -> State: 1.177 <-
+    car3.cell_progress = 76
+  -> State: 1.178 <-
+    car3.cell_progress = 77
+  -> State: 1.179 <-
+    car3.cell_progress = 78
+  -> State: 1.180 <-
+    car3.cell_progress = 79
+  -> State: 1.181 <-
+    car3.cell_progress = 80
+  -> State: 1.182 <-
+    car3.cell_progress = 81
+  -> State: 1.183 <-
+    car3.cell_progress = 82
+  -> State: 1.184 <-
+    car3.cell_progress = 83
+  -> State: 1.185 <-
+    car3.cell_progress = 84
+  -> State: 1.186 <-
+    car3.cell_progress = 85
+  -> State: 1.187 <-
+    car3.cell_progress = 86
+  -> State: 1.188 <-
+    car3.cell_progress = 87
+  -> State: 1.189 <-
+    car3.cell_progress = 88
+  -> State: 1.190 <-
+    car3.cell_progress = 89
+  -> State: 1.191 <-
+    car3.cell_progress = 90
+  -> State: 1.192 <-
+    car3.cell_progress = 91
+  -> State: 1.193 <-
+    car3.cell_progress = 92
+  -> State: 1.194 <-
+    car3.cell_progress = 93
+  -> State: 1.195 <-
+    car3.cell_progress = 94
+  -> State: 1.196 <-
+    car3.cell_progress = 95
+  -> State: 1.197 <-
+    car3.cell_progress = 96
+  -> State: 1.198 <-
+    car3.cell_progress = 97
+  -> State: 1.199 <-
+    car3.cell_progress = 98
+  -> State: 1.200 <-
+    car3.cell_progress = 99
+  -> State: 1.201 <-
+    car3.cell_progress = 100
+  -> State: 1.202 <-
+    car3.cell_progress = 1
+    car3.tcl_index = 2
+    car3.position = 3
+  -> State: 1.203 <-
+    car3.cell_progress = 2
+  -> State: 1.204 <-
+    car3.cell_progress = 3
+  -> State: 1.205 <-
+    car3.cell_progress = 4
+  -> State: 1.206 <-
+    car3.cell_progress = 5
+  -> State: 1.207 <-
+    car3.cell_progress = 6
+  -> State: 1.208 <-
+    car3.cell_progress = 7
+  -> State: 1.209 <-
+    car3.cell_progress = 8
+  -> State: 1.210 <-
+    car3.cell_progress = 9
+  -> State: 1.211 <-
+    car3.cell_progress = 10
+  -> State: 1.212 <-
+    car3.cell_progress = 11
+  -> State: 1.213 <-
+    car3.cell_progress = 12
+  -> State: 1.214 <-
+    car3.cell_progress = 13
+  -> State: 1.215 <-
+    car3.cell_progress = 14
+  -> State: 1.216 <-
+    car3.cell_progress = 15
+  -> State: 1.217 <-
+    car3.cell_progress = 16
+  -> State: 1.218 <-
+    car3.cell_progress = 17
+  -> State: 1.219 <-
+    car3.cell_progress = 18
+  -> State: 1.220 <-
+    car3.cell_progress = 19
+  -> State: 1.221 <-
+    car3.cell_progress = 20
+  -> State: 1.222 <-
+    car3.cell_progress = 21
+  -> State: 1.223 <-
+    car3.cell_progress = 22
+  -> State: 1.224 <-
+    car3.cell_progress = 23
+  -> State: 1.225 <-
+    car3.cell_progress = 24
+  -> State: 1.226 <-
+    car3.cell_progress = 25
+  -> State: 1.227 <-
+    car3.cell_progress = 26
+  -> State: 1.228 <-
+    car3.cell_progress = 27
+  -> State: 1.229 <-
+    car3.cell_progress = 28
+  -> State: 1.230 <-
+    car3.cell_progress = 29
+  -> State: 1.231 <-
+    car3.cell_progress = 30
+  -> State: 1.232 <-
+    car3.cell_progress = 31
+  -> State: 1.233 <-
+    car3.cell_progress = 32
+  -> State: 1.234 <-
+    car3.cell_progress = 33
+  -> State: 1.235 <-
+    car3.cell_progress = 34
+  -> State: 1.236 <-
+    car3.cell_progress = 35
+  -> State: 1.237 <-
+    car3.cell_progress = 36
+  -> State: 1.238 <-
+    car3.cell_progress = 37
+  -> State: 1.239 <-
+    car3.cell_progress = 38
+  -> State: 1.240 <-
+    car3.cell_progress = 39
+  -> State: 1.241 <-
+    car3.cell_progress = 40
+  -> State: 1.242 <-
+    car3.cell_progress = 41
+  -> State: 1.243 <-
+    car3.cell_progress = 42
+  -> State: 1.244 <-
+    car3.cell_progress = 43
+  -> State: 1.245 <-
+    car3.cell_progress = 44
+  -> State: 1.246 <-
+    car3.cell_progress = 45
+  -> State: 1.247 <-
+    car3.cell_progress = 46
+  -> State: 1.248 <-
+    car3.cell_progress = 47
+  -> State: 1.249 <-
+    car3.cell_progress = 48
+  -> State: 1.250 <-
+    car3.cell_progress = 49
+  -> State: 1.251 <-
+    car3.cell_progress = 50
+  -> State: 1.252 <-
+    car3.cell_progress = 51
+  -> State: 1.253 <-
+    car3.cell_progress = 52
+  -> State: 1.254 <-
+    car3.cell_progress = 53
+  -> State: 1.255 <-
+    car3.cell_progress = 54
+  -> State: 1.256 <-
+    car3.cell_progress = 55
+  -> State: 1.257 <-
+    car3.cell_progress = 56
+  -> State: 1.258 <-
+    car3.cell_progress = 57
+  -> State: 1.259 <-
+    car3.cell_progress = 58
+  -> State: 1.260 <-
+    car3.cell_progress = 59
+  -> State: 1.261 <-
+    car3.cell_progress = 60
+  -> State: 1.262 <-
+    car3.cell_progress = 61
+  -> State: 1.263 <-
+    car3.cell_progress = 62
+  -> State: 1.264 <-
+    car3.cell_progress = 63
+  -> State: 1.265 <-
+    car3.cell_progress = 64
+  -> State: 1.266 <-
+    car3.cell_progress = 65
+  -> State: 1.267 <-
+    car3.cell_progress = 66
+  -> State: 1.268 <-
+    car3.cell_progress = 67
+  -> State: 1.269 <-
+    car3.cell_progress = 68
+  -> State: 1.270 <-
+    car3.cell_progress = 69
+  -> State: 1.271 <-
+    car3.cell_progress = 70
+  -> State: 1.272 <-
+    car3.cell_progress = 71
+  -> State: 1.273 <-
+    car3.cell_progress = 72
+  -> State: 1.274 <-
+    car3.cell_progress = 73
+  -> State: 1.275 <-
+    car3.cell_progress = 74
+  -> State: 1.276 <-
+    car3.cell_progress = 75
+  -> State: 1.277 <-
+    car3.cell_progress = 76
+  -> State: 1.278 <-
+    car3.cell_progress = 77
+  -> State: 1.279 <-
+    car3.cell_progress = 78
+  -> State: 1.280 <-
+    car3.cell_progress = 79
+  -> State: 1.281 <-
+    car3.cell_progress = 80
+  -> State: 1.282 <-
+    car3.cell_progress = 81
+  -> State: 1.283 <-
+    car3.cell_progress = 82
+  -> State: 1.284 <-
+    car3.cell_progress = 83
+  -> State: 1.285 <-
+    car3.cell_progress = 84
+  -> State: 1.286 <-
+    car3.cell_progress = 85
+  -> State: 1.287 <-
+    car3.cell_progress = 86
+  -> State: 1.288 <-
+    car3.cell_progress = 87
+  -> State: 1.289 <-
+    car3.cell_progress = 88
+  -> State: 1.290 <-
+    car3.cell_progress = 89
+  -> State: 1.291 <-
+    car3.cell_progress = 90
+  -> State: 1.292 <-
+    car3.cell_progress = 91
+  -> State: 1.293 <-
+    car3.cell_progress = 92
+  -> State: 1.294 <-
+    car3.cell_progress = 93
+  -> State: 1.295 <-
+    car3.cell_progress = 94
+  -> State: 1.296 <-
+    car3.cell_progress = 95
+  -> State: 1.297 <-
+    car3.cell_progress = 96
+  -> State: 1.298 <-
+    car3.cell_progress = 97
+  -> State: 1.299 <-
+    car3.cell_progress = 98
+  -> State: 1.300 <-
+    car3.cell_progress = 99
+  -> State: 1.301 <-
+    car3.cell_progress = 100
+  -- Loop starts here
+  -> State: 1.302 <-
+    car3.cell_progress = 1
+    car3.tcl_index = 3
+    car3.INSIDE = FALSE
+    car3.EXITED = TRUE
+    car3.position = 0
+  -> State: 1.303 <-

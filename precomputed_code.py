@@ -1,4 +1,5 @@
-tcl_initialization = '''		init(tcl[0]) := case
+tcl_initialization2x2 = '''		init(tcl[0]) := 0;
+			init(tcl[1]) := case
 			from = BOTTOM & to = BOTTOM : 0;
 			from = TOP & to = TOP : 0;
 			from = RIGHT & to = RIGHT : 0;
@@ -16,39 +17,57 @@ tcl_initialization = '''		init(tcl[0]) := case
 			from = LEFT & to = BOTTOM : 3;
 			from = LEFT & to = TOP : 3;
 		esac;
-		init(tcl[1]) := case
-			from = BOTTOM & to = BOTTOM : 0;
-			from = TOP & to = TOP : 0;
-			from = RIGHT & to = RIGHT : 0;
-			from = LEFT & to = LEFT : 0;
-			from = BOTTOM & to = TOP : 2;
-			from = BOTTOM & to = RIGHT : 0;
-			from = BOTTOM & to = LEFT : 2;
-			from = TOP & to = BOTTOM : 3;
-			from = TOP & to = LEFT : 0;
-			from = TOP & to = RIGHT : 3;
-			from = RIGHT & to = LEFT : 1;
-			from = RIGHT & to = TOP : 0;
-			from = RIGHT & to = BOTTOM : 1;
-			from = LEFT & to = RIGHT : 4;
-			from = LEFT & to = BOTTOM : 0;
-			from = LEFT & to = TOP : 4;
-		esac;
 		init(tcl[2]) := case
 			from = BOTTOM & to = BOTTOM : 0;
 			from = TOP & to = TOP : 0;
 			from = RIGHT & to = RIGHT : 0;
 			from = LEFT & to = LEFT : 0;
+			from = BOTTOM & to = TOP : 2;
+			from = BOTTOM & to = RIGHT : 5;
+			from = BOTTOM & to = LEFT : 2;
+			from = TOP & to = BOTTOM : 3;
+			from = TOP & to = LEFT : 5;
+			from = TOP & to = RIGHT : 3;
+			from = RIGHT & to = LEFT : 1;
+			from = RIGHT & to = TOP : 5;
+			from = RIGHT & to = BOTTOM : 1;
+			from = LEFT & to = RIGHT : 4;
+			from = LEFT & to = BOTTOM : 5;
+			from = LEFT & to = TOP : 4;
+		esac;
+		init(tcl[3]) := case
+			from = BOTTOM & to = BOTTOM : 0;
+			from = TOP & to = TOP : 0;
+			from = RIGHT & to = RIGHT : 0;
+			from = LEFT & to = LEFT : 0;
 			from = BOTTOM & to = TOP : 0;
-			from = BOTTOM & to = RIGHT : 0;
+			from = BOTTOM & to = RIGHT : 5;
 			from = BOTTOM & to = LEFT : 1;
-			from = TOP & to = BOTTOM : 0;
-			from = TOP & to = LEFT : 0;
+			from = TOP & to = BOTTOM : 5;
+			from = TOP & to = LEFT : 5;
 			from = TOP & to = RIGHT : 4;
-			from = RIGHT & to = LEFT : 0;
-			from = RIGHT & to = TOP : 0;
+			from = RIGHT & to = LEFT : 5;
+			from = RIGHT & to = TOP : 5;
 			from = RIGHT & to = BOTTOM : 3;
-			from = LEFT & to = RIGHT : 0;
-			from = LEFT & to = BOTTOM : 0;
+			from = LEFT & to = RIGHT : 5;
+			from = LEFT & to = BOTTOM : 5;
 			from = LEFT & to = TOP : 2;
+		esac;
+		init(tcl[4]) := case
+			from = BOTTOM & to = BOTTOM : 0;
+			from = TOP & to = TOP : 0;
+			from = RIGHT & to = RIGHT : 0;
+			from = LEFT & to = LEFT : 0;
+			from = BOTTOM & to = TOP : 0;
+			from = BOTTOM & to = RIGHT : 5;
+			from = BOTTOM & to = LEFT : 5;
+			from = TOP & to = BOTTOM : 5;
+			from = TOP & to = LEFT : 5;
+			from = TOP & to = RIGHT : 5;
+			from = RIGHT & to = LEFT : 5;
+			from = RIGHT & to = TOP : 5;
+			from = RIGHT & to = BOTTOM : 5;
+			from = LEFT & to = RIGHT : 5;
+			from = LEFT & to = BOTTOM : 5;
+			from = LEFT & to = TOP : 5;
 		esac;'''

@@ -3,25 +3,58 @@
 
 # this import can be commented. It is used for 'mypy', a tool
 # for static type checking in Python.
-# from typing import List, Dict
+from typing import List, Dict
+
+ 
+'''
+- 2x2 intersection cells:
+
+         top
+
+        1   2
+  left          right
+        3   4
+     
+        bottom
+
+
+
+
+- 4x4 intersection cells:
+
+             top
+
+        1   2   3   4
+
+        5   6   7   8
+ left                   right
+        9  10  11  12
+
+        13 14  15  16
+
+            bottom
+
+
+'''
+
 
 paths_dict2 = {} #type: Dict[str, List[int]]
-paths_dict2['2_BOTTOM_BOTTOM'] = [0,0,0]
-paths_dict2['2_TOP_TOP'] = [0,0,0]
-paths_dict2['2_RIGHT_RIGHT'] = [0,0,0]
-paths_dict2['2_LEFT_LEFT'] = [0,0,0]
-paths_dict2['2_BOTTOM_TOP'] = [4, 2, 0]
-paths_dict2['2_BOTTOM_RIGHT'] = [4, 0, 0]
-paths_dict2['2_BOTTOM_LEFT'] = [4,2,1]
-paths_dict2['2_TOP_BOTTOM'] =  [1,3,0]
-paths_dict2['2_TOP_LEFT']  =   [1,0,0]
-paths_dict2['2_TOP_RIGHT']  = [1,3,4]
-paths_dict2['2_RIGHT_LEFT'] = [2,1,0]
-paths_dict2['2_RIGHT_TOP'] = [2,0,0]
-paths_dict2['2_RIGHT_BOTTOM'] = [2,1,3]
-paths_dict2['2_LEFT_RIGHT'] = [3,4,0]
-paths_dict2['2_LEFT_BOTTOM'] = [3,0,0]
-paths_dict2['2_LEFT_TOP'] = [3,4,2]
+paths_dict2['2_BOTTOM_BOTTOM'] = [0,0,0,0,5]
+paths_dict2['2_TOP_TOP'] = [0,0,0,0,5]
+paths_dict2['2_RIGHT_RIGHT'] = [0,0,0,0,5]
+paths_dict2['2_LEFT_LEFT'] = [0,0,0,0,5]
+paths_dict2['2_BOTTOM_TOP'] = [0,4, 2, 5,5]
+paths_dict2['2_BOTTOM_RIGHT'] = [0,4, 5, 5,5]
+paths_dict2['2_BOTTOM_LEFT'] = [0,4,2,1,5]
+paths_dict2['2_TOP_BOTTOM'] =  [0,1,3,5,5]
+paths_dict2['2_TOP_LEFT']  =   [0,1,5,5,5]
+paths_dict2['2_TOP_RIGHT']  = [0,1,3,4,5]
+paths_dict2['2_RIGHT_LEFT'] = [0,2,1,5,5]
+paths_dict2['2_RIGHT_TOP'] = [0,2,5,5,5]
+paths_dict2['2_RIGHT_BOTTOM'] = [0,2,1,3,5]
+paths_dict2['2_LEFT_RIGHT'] = [0,3,4,5,5]
+paths_dict2['2_LEFT_BOTTOM'] = [0,3,5,5,5]
+paths_dict2['2_LEFT_TOP'] = [0,3,4,2,5]
 
 
 paths_dict4 = {} #type: Dict[str, List[int]]
@@ -62,39 +95,8 @@ def print_tcl_initialization_4x4():
         print('esac;')
 
 
-print_tcl_initialization_4x4()
+print_tcl_initialization_2x2()
 
- 
-'''
-- 2x2 intersection cells:
-
-         top
-
-        1   2
-  left          right
-        3   4
-     
-        bottom
-
-
-
-
-- 4x4 intersection cells:
-
-             top
-
-        1   2   3   4
-
-        5   6   7   8
-left                    right
-        9  10  11  12
-
-        13 14  15  16
-
-            bottom
-
-
-'''
 
 
 

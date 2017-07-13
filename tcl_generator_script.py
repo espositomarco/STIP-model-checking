@@ -76,7 +76,7 @@ paths_dict4['4_LEFT_BOTTOM'] =   [13,0,0,0,0]
 paths_dict4['4_LEFT_TOP'] =      [9,19,11,7,3]
 
 def print_tcl_initialization_2x2():
-    for i in range(0,3):
+    for i in range(0,5):
         init = 'init(tcl['+str(i)+']) := case'
         print(init)
         for name,path in paths_dict2.items():

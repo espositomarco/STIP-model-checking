@@ -1,0 +1,78 @@
+MODULE intersection(car1, car2)
+
+	DEFINE
+		accel := 3;
+		decel := 3;
+	FROZENVAR
+
+	VAR
+
+	ASSIGN 
+		#for Index in 1..2 {
+			--next(carIndex.tcl_index) := min(carIndex.tcl_index + 1, carIndex.max_tcl_index);
+			--next(carIndex.speed) := {maxxcarIndex.speed -3,carIndex.speed,mincarIndex.speed+3};
+			next(carIndex.speed) := case
+				carIndex.speed + accel > carIndex.max_speed : {carIndex.speed - decel, carIndex.speed};
+				carIndex.speed - decel < 0 : {carIndex.speed, carIndex.speed + accel};
+				TRUE : {carIndex.speed - decel, carIndex.speed, carIndex.speed + accel};
+			esac;
+		}
+
+-----------------------------------------------------------------------------------------------------------------------
+
+MODULE car(from_in, to_in, speed_in)
+
+	DEFINE
+		lanes := 2;
+		max_tcl_index := lanes + 2;
+		max_position := (lanes * lanes) + 1;
+		max_speed := 30;
+		max_progress := 100;
+
+		position := tcl[tcl_index];
+
+		APPROACHING := position <= 0;
+		CROSSING := position > 0 & position < max_position;
+		EXITING := position >= max_position;
+
+	FROZENVAR
+		tcl : array 0..max_tcl_index of 0..max_position;
+		from : { TOP, BOTTOM, RIGHT, LEFT};
+		to : { TOP, BOTTOM, RIGHT, LEFT};
+
+	VAR
+		tcl_index : 0..max_tcl_index;
+		speed : 0..max_speed;
+		progress : 0..max_progress;
+
+	ASSIGN
+		#insert_string {tcl_initialization2x2 }
+
+		init(tcl_index) := 0;
+
+		init(from) := from_in;
+		init(to) := to_in;
+		init(speed) := speed_in;
+		init(progress) := 0;
+
+		next(progress) := case
+			EXITING &  progress + speed > max_progress : max_progress;
+			progress + speed > max_progress : 0;
+			progress + speed <= max_progress : progress+speed;
+		esac;
+
+		next(tcl_index) := case
+			tcl_index != max_tcl_index & progress+speed > max_progress : tcl_index + 1;
+			TRUE : tcl_index;
+		esac;
+
+
+MODULE main 
+	VAR
+		car1 : car(TOP, BOTTOM, 10);
+		car2 : car(RIGHT, BOTTOM, 30);
+		intersection : intersection(car1, car2);
+
+	CTLSPEC
+		-- AG ( ( car1.CROSSING & car2.CROSSING ) -> car1.position != car2.position  )
+		AF ( ( car1.CROSSING & car2.CROSSING ) & car1.position = car2.position  )

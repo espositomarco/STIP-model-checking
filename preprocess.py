@@ -2,7 +2,7 @@
 # > python preprocess.py filename.smv
 
 import sys
-from precomputed_code import tcl_initialization
+from precomputed_code import tcl_initialization2x2
 from typing import Iterable
 
 def range_string(text : str) -> Iterable[int] :

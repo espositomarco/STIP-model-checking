@@ -1,0 +1,439 @@
+--MODULE global
+MODULE cell(position_in, car0, car1)
+    DEFINE
+        -- number of cars
+        N := 10;
+
+        -- size of the edge of each cell (meters)
+        cell_size := 5;
+
+        -- simulation step length (seconds)
+        --dt := 0.1;
+
+        -- number of lanes
+        L := 2;
+
+        -- max length of a tcl -1 (trailing -1 is needed because array indexes start with 0)
+        len := (L + 1) - 1;
+
+        -- simulation steps in a second
+        steps_per_second := 10;
+
+        -- max cell progress
+        max_progress := 100;
+        
+        -- max speed (cell/max_progress per simulation step) (14 m/s ~ 50 km/h)
+        --max_speed := (max_progress * 14) / (cell_size * steps_per_second);
+        max_speed := 20;
+
+        -- total number of cars
+        cars_count := 100;
+
+        -- max distance from intersection expressed in (cell length in meters)/max_progress
+        max_distance_from_intersection := max_progress;
+
+        max_time := 1000;
+
+
+    FROZENVAR
+        position : 1..(L*L);
+
+    VAR
+        --cars : array 1..N of boolean;
+        --inside_car : 0..N;
+        --progress : 0..max_progress;
+        --speeds : array 1..N of 0..max_speed;
+        --froms : array 1..N of {BOTTOM, TOP, LEFT, RIGHT};
+        --tos :   array 1..N of {BOTTOM, TOP, LEFT, RIGHT};
+        
+        --enter_times : array 1..N of 1..max_time;
+        --exit_times : array 1..N of 1..max_time;
+
+    ASSIGN
+
+        init(position) := position_in;
+        --init(inside_car) := 0;
+        --init(progress) := 0;
+        
+        ---- Code generated as <for> (preprocess.py)
+        --init(speeds[1]) := 20;
+        --
+        --init(speeds[2]) := 20;
+        --
+        --init(speeds[3]) := 20;
+        --
+        --init(speeds[4]) := 20;
+        --
+        --init(speeds[5]) := 20;
+        --
+        --init(speeds[6]) := 20;
+        --
+        --init(speeds[7]) := 20;
+        --
+        --init(speeds[8]) := 20;
+        --
+        --init(speeds[9]) := 20;
+        --
+        --init(speeds[10]) := 20;
+        --
+
+        ---- Code generated as <for> (preprocess.py)
+        --init(froms[1]) := {BOTTOM, TOP, RIGHT, LEFT};
+        --
+        --init(froms[2]) := {BOTTOM, TOP, RIGHT, LEFT};
+        --
+        --init(froms[3]) := {BOTTOM, TOP, RIGHT, LEFT};
+        --
+        --init(froms[4]) := {BOTTOM, TOP, RIGHT, LEFT};
+        --
+        --init(froms[5]) := {BOTTOM, TOP, RIGHT, LEFT};
+        --
+        --init(froms[6]) := {BOTTOM, TOP, RIGHT, LEFT};
+        --
+        --init(froms[7]) := {BOTTOM, TOP, RIGHT, LEFT};
+        --
+        --init(froms[8]) := {BOTTOM, TOP, RIGHT, LEFT};
+        --
+        --init(froms[9]) := {BOTTOM, TOP, RIGHT, LEFT};
+        --
+        --init(froms[10]) := {BOTTOM, TOP, RIGHT, LEFT};
+        --
+
+        ---- Code generated as <for> (preprocess.py)
+        --init(tos[1]) := {BOTTOM, TOP, RIGHT, LEFT};
+        --
+        --init(tos[2]) := {BOTTOM, TOP, RIGHT, LEFT};
+        --
+        --init(tos[3]) := {BOTTOM, TOP, RIGHT, LEFT};
+        --
+        --init(tos[4]) := {BOTTOM, TOP, RIGHT, LEFT};
+        --
+        --init(tos[5]) := {BOTTOM, TOP, RIGHT, LEFT};
+        --
+        --init(tos[6]) := {BOTTOM, TOP, RIGHT, LEFT};
+        --
+        --init(tos[7]) := {BOTTOM, TOP, RIGHT, LEFT};
+        --
+        --init(tos[8]) := {BOTTOM, TOP, RIGHT, LEFT};
+        --
+        --init(tos[9]) := {BOTTOM, TOP, RIGHT, LEFT};
+        --
+        --init(tos[10]) := {BOTTOM, TOP, RIGHT, LEFT};
+        --
+
+
+        ---- Code generated as <for> (preprocess.py)
+        --next(speeds[1]) := case
+        --    1 = inside_car : {1,2,3,4,5,6,7,8,9,10};
+        --    1 != inside_car : speeds[1];
+        --esac;
+        --
+        --next(speeds[2]) := case
+        --    2 = inside_car : {1,2,3,4,5,6,7,8,9,10};
+        --    2 != inside_car : speeds[2];
+        --esac;
+        --
+        --next(speeds[3]) := case
+        --    3 = inside_car : {1,2,3,4,5,6,7,8,9,10};
+        --    3 != inside_car : speeds[3];
+        --esac;
+        --
+        --next(speeds[4]) := case
+        --    4 = inside_car : {1,2,3,4,5,6,7,8,9,10};
+        --    4 != inside_car : speeds[4];
+        --esac;
+        --
+        --next(speeds[5]) := case
+        --    5 = inside_car : {1,2,3,4,5,6,7,8,9,10};
+        --    5 != inside_car : speeds[5];
+        --esac;
+        --
+        --next(speeds[6]) := case
+        --    6 = inside_car : {1,2,3,4,5,6,7,8,9,10};
+        --    6 != inside_car : speeds[6];
+        --esac;
+        --
+        --next(speeds[7]) := case
+        --    7 = inside_car : {1,2,3,4,5,6,7,8,9,10};
+        --    7 != inside_car : speeds[7];
+        --esac;
+        --
+        --next(speeds[8]) := case
+        --    8 = inside_car : {1,2,3,4,5,6,7,8,9,10};
+        --    8 != inside_car : speeds[8];
+        --esac;
+        --
+        --next(speeds[9]) := case
+        --    9 = inside_car : {1,2,3,4,5,6,7,8,9,10};
+        --    9 != inside_car : speeds[9];
+        --esac;
+        --
+        --next(speeds[10]) := case
+        --    10 = inside_car : {1,2,3,4,5,6,7,8,9,10};
+        --    10 != inside_car : speeds[10];
+        --esac;
+        --
+
+        next(car0.speed) := case
+            car0.speed = max_speed : car0.speed;
+            car0.speed < 3 : 3;
+            TRUE : {car0.speed - 3, car0.speed};
+        esac;
+        next(car1.speed) := case
+            car1.speed > max_speed - 2: car1.speed;
+            car1.speed < 3 : 3;
+            TRUE : {car1.speed - 3, car1.speed};
+        esac;
+
+        --next(car0.speed) := car0.speed;
+        --next(car1.speed) := car1.speed;
+
+        -- EVOLUTION --
+        -- niente.
+
+
+
+
+
+
+
+
+
+
+
+MODULE main
+    VAR
+        --<<for Index in 1..4
+        --cell_Index : cell(Index);>>
+        car1 : car(1, BOTTOM, TOP, 8, 0, cell_1);
+        car2 : car(2, LEFT, RIGHT, 18, 0, cell_1);
+        cell_1 : cell(1, car1, car2);
+
+    SPEC
+        --EF car1.tcl[car1.tcl_index] = car2.tcl[car2.tcl_index]
+         ! ( EG ( (car1.position != 0 & car1.position != 0) -> (car1.position != car2.position) ) )
+        --<<for Index in 1..4
+        --car_Index : car(cell_Index);>>
+
+
+
+
+
+
+
+
+
+
+
+------------   CAR  -------------
+MODULE car(id_in, from_in, to_in, speed_in, distance_from_intersection_in, cell_in)
+    DEFINE
+        -- size of the edge of each cell (meters)
+        cell_size := 5;
+
+        -- simulation step length (seconds)
+        --dt := 0.1;
+
+        -- number of lanes
+        L := 2;
+
+        -- max length of a tcl -1 (trailing -1 is needed because array indexes start with 0)
+        len := L + 2;
+
+        -- simulation steps in a second
+        steps_per_second := 10;
+
+        -- max cell progress
+        max_progress := 100;
+        
+        -- max speed (cell/max_progress per simulation step) (14 m/s ~ 50 km/h)
+        max_speed := (max_progress * 14) / (cell_size * steps_per_second);
+        
+        -- total number of cars
+        N := 100;
+
+        -- max distance from intersection expressed in (cell length in meters)/max_progress
+        max_distance_from_intersection := max_progress;
+
+        position := tcl[tcl_index];
+
+    FROZENVAR
+    -- forzenvars don't change in time
+        
+        -- car id. Used to compute priority.
+        id : 0..N;
+
+        -- trajectory cell list (list of vec2)
+        tcl : array 0..len of 0..(L*L)+1; -- 0 is out of intersection
+        
+        -- list of time of arrival for each cell in tcl
+        -- tcl_time : array 0..len of array 0..1 of 0..L;
+
+        from : {BOTTOM, TOP, LEFT, RIGHT};
+        to:    {BOTTOM, TOP, LEFT, RIGHT};
+
+        distance_from_intersection : 0..max_distance_from_intersection;
+    
+    VAR
+        -- current position in the intersection grid
+        --position : 0..(L*L); -- 0 is out of intersection
+
+        -- current speed in tenth of meters per second
+        speed : 0..max_speed;
+        
+        -- fraction of cell traveled. Reals are not allowed.
+        cell_progress : 0..max_progress;
+        
+        -- index pointing at current position in tcl
+        tcl_index : 0..len;
+
+
+
+    ASSIGN
+        -- INITIALIZATIONS --
+        init(id) := id_in;
+        init(from) := from_in;
+        init(to) := to_in;
+        --init(to) := case
+        --    from = BOTTOM : {TOP, LEFT, RIGHT};
+        --    from = TOP : {BOTTOM, LEFT, RIGHT};
+        --    from = LEFT : {BOTTOM, TOP, RIGHT};
+        --    from = RIGHT : {BOTTOM, TOP, LEFT};
+        --esac;
+
+        init(distance_from_intersection) := 40;
+        
+        -- Code generated as <insert_string> (preprocess.py)
+init(tcl[0]) := case
+	from = BOTTOM & to = BOTTOM : 0;
+	from = TOP & to = TOP : 0;
+	from = RIGHT & to = RIGHT : 0;
+	from = LEFT & to = LEFT : 0;
+	from = BOTTOM & to = TOP : 0;
+	from = BOTTOM & to = RIGHT : 0;
+	from = BOTTOM & to = LEFT : 0;
+	from = TOP & to = BOTTOM : 0;
+	from = TOP & to = LEFT : 0;
+	from = TOP & to = RIGHT : 0;
+	from = RIGHT & to = LEFT : 0;
+	from = RIGHT & to = TOP : 0;
+	from = RIGHT & to = BOTTOM : 0;
+	from = LEFT & to = RIGHT : 0;
+	from = LEFT & to = BOTTOM : 0;
+	from = LEFT & to = TOP : 0;
+esac;
+init(tcl[1]) := case
+	from = BOTTOM & to = BOTTOM : 0;
+	from = TOP & to = TOP : 0;
+	from = RIGHT & to = RIGHT : 0;
+	from = LEFT & to = LEFT : 0;
+	from = BOTTOM & to = TOP : 4;
+	from = BOTTOM & to = RIGHT : 4;
+	from = BOTTOM & to = LEFT : 4;
+	from = TOP & to = BOTTOM : 1;
+	from = TOP & to = LEFT : 1;
+	from = TOP & to = RIGHT : 1;
+	from = RIGHT & to = LEFT : 2;
+	from = RIGHT & to = TOP : 2;
+	from = RIGHT & to = BOTTOM : 2;
+	from = LEFT & to = RIGHT : 3;
+	from = LEFT & to = BOTTOM : 3;
+	from = LEFT & to = TOP : 3;
+esac;
+init(tcl[2]) := case
+	from = BOTTOM & to = BOTTOM : 0;
+	from = TOP & to = TOP : 0;
+	from = RIGHT & to = RIGHT : 0;
+	from = LEFT & to = LEFT : 0;
+	from = BOTTOM & to = TOP : 2;
+	from = BOTTOM & to = RIGHT : 5;
+	from = BOTTOM & to = LEFT : 2;
+	from = TOP & to = BOTTOM : 3;
+	from = TOP & to = LEFT : 5;
+	from = TOP & to = RIGHT : 3;
+	from = RIGHT & to = LEFT : 1;
+	from = RIGHT & to = TOP : 5;
+	from = RIGHT & to = BOTTOM : 1;
+	from = LEFT & to = RIGHT : 4;
+	from = LEFT & to = BOTTOM : 5;
+	from = LEFT & to = TOP : 4;
+esac;
+init(tcl[3]) := case
+	from = BOTTOM & to = BOTTOM : 0;
+	from = TOP & to = TOP : 0;
+	from = RIGHT & to = RIGHT : 0;
+	from = LEFT & to = LEFT : 0;
+	from = BOTTOM & to = TOP : 5;
+	from = BOTTOM & to = RIGHT : 5;
+	from = BOTTOM & to = LEFT : 1;
+	from = TOP & to = BOTTOM : 5;
+	from = TOP & to = LEFT : 5;
+	from = TOP & to = RIGHT : 4;
+	from = RIGHT & to = LEFT : 5;
+	from = RIGHT & to = TOP : 5;
+	from = RIGHT & to = BOTTOM : 3;
+	from = LEFT & to = RIGHT : 5;
+	from = LEFT & to = BOTTOM : 5;
+	from = LEFT & to = TOP : 2;
+esac;
+init(tcl[4]) := case
+	from = BOTTOM & to = BOTTOM : 5;
+	from = TOP & to = TOP : 5;
+	from = RIGHT & to = RIGHT : 5;
+	from = LEFT & to = LEFT : 5;
+	from = BOTTOM & to = TOP : 5;
+	from = BOTTOM & to = RIGHT : 5;
+	from = BOTTOM & to = LEFT : 5;
+	from = TOP & to = BOTTOM : 5;
+	from = TOP & to = LEFT : 5;
+	from = TOP & to = RIGHT : 5;
+	from = RIGHT & to = LEFT : 5;
+	from = RIGHT & to = TOP : 5;
+	from = RIGHT & to = BOTTOM : 5;
+	from = LEFT & to = RIGHT : 5;
+	from = LEFT & to = BOTTOM : 5;
+	from = LEFT & to = TOP : 5;
+esac;
+
+        --init(tcl_time[0]) := distance_from_intersection / speed;
+        --init(tcl_time[1]) := tcl_time[0] + cell_size * max_progress / speed;
+
+        init(tcl_index) := 0;
+        --init(position) := 0;
+
+        init(speed) := speed_in;
+        --init(speed) := cell_in.speeds[id];
+
+        --init(cell_progress) := max_progress - distance_from_intersection;
+        init(cell_progress) := 0;
+
+        -- also tcl_time should be initialized with a script
+        -- init(tcl_time) := get_initial_tcl_time(from, to, speed); -- pseudocode
+
+
+
+        -- SIMULATION --
+        --next(speed) := speed; --{speed-1, speed, speed+1};
+        next(tcl_index) := case
+            tcl_index = len : len;
+            cell_progress + speed >  max_progress: tcl_index + 1;
+            cell_progress + speed <= max_progress: tcl_index;
+        esac;
+        
+        next(cell_progress) := case
+            cell_progress + speed >  max_progress : min(cell_progress + speed  - max_progress, max_progress);
+            cell_progress + speed <= max_progress : min(cell_progress + speed, max_progress);
+        esac;
+
+        --next(position) := case
+        --  tcl_index = -1 : 0;
+        --  tcl_index >= 0  : tcl[tcl_index];
+        --esac;
+
+
+
+
+
+
+
+

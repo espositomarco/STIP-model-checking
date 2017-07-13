@@ -139,7 +139,7 @@ MODULE car(id_in, from_in, to_in, speed_in, distance_from_intersection_in, cell_
         L := 2;
 
         -- max length of a tcl -1 (trailing -1 is needed because array indexes start with 0)
-        len := (L + 1) - 1;
+        len := L + 2;
 
         -- simulation steps in a second
         steps_per_second := 10;
@@ -165,7 +165,7 @@ MODULE car(id_in, from_in, to_in, speed_in, distance_from_intersection_in, cell_
         id : 0..N;
 
         -- trajectory cell list (list of vec2)
-        tcl : array 0..len of 0..(L*L); -- 0 is out of intersection
+        tcl : array 0..len of 0..(L*L)+1; -- 0 is out of intersection
         
         -- list of time of arrival for each cell in tcl
         -- tcl_time : array 0..len of array 0..1 of 0..L;
@@ -204,7 +204,7 @@ MODULE car(id_in, from_in, to_in, speed_in, distance_from_intersection_in, cell_
 
         init(distance_from_intersection) := 40;
         
-        #insert_string { tcl_initialization }
+        #insert_string { tcl_initialization2x2 }
 
         --init(tcl_time[0]) := distance_from_intersection / speed;
         --init(tcl_time[1]) := tcl_time[0] + cell_size * max_progress / speed;

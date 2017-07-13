@@ -14,7 +14,7 @@ MODULE cell(position_in, car0, car1)
         L := 2;
 
         -- max length of a tcl -1 (trailing -1 is needed because array indexes start with 0)
-        len := (L + 1) - 1;
+        len := L + 2;
 
         -- simulation steps in a second
         steps_per_second := 10;

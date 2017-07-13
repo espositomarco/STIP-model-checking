@@ -1,8 +1,7 @@
---MODULE global
-MODULE cell(position_in, car0, car1)
+MODULE intersection(car1, car2)
     DEFINE
         -- number of cars
-        N := 10;
+        num_cars := 2;
 
         -- size of the edge of each cell (meters)
         cell_size := 5;
@@ -13,109 +12,54 @@ MODULE cell(position_in, car0, car1)
         -- number of lanes
         L := 2;
 
-        -- max length of a tcl -1 (trailing -1 is needed because array indexes start with 0)
-        len := L + 2;
-
         -- simulation steps in a second
         steps_per_second := 10;
-
-        -- max cell progress
-        max_progress := 100;
         
         -- max speed (cell/max_progress per simulation step) (14 m/s ~ 50 km/h)
         --max_speed := (max_progress * 14) / (cell_size * steps_per_second);
         max_speed := 20;
 
-        -- total number of cars
-        cars_count := 100;
-
-        -- max distance from intersection expressed in (cell length in meters)/max_progress
-        max_distance_from_intersection := max_progress;
-
-        max_time := 1000;
-
-
-    FROZENVAR
-        position : 1..(L*L);
+        max_time := 10;
 
     VAR
-        --cars : array 1..N of boolean;
-        --inside_car : 0..N;
-        --progress : 0..max_progress;
-        --speeds : array 1..N of 0..max_speed;
-        --froms : array 1..N of {BOTTOM, TOP, LEFT, RIGHT};
-        --tos :   array 1..N of {BOTTOM, TOP, LEFT, RIGHT};
-        
-        --enter_times : array 1..N of 1..max_time;
-        --exit_times : array 1..N of 1..max_time;
+        time : 0..max_time;
 
     ASSIGN
-
-        init(position) := position_in;
-        --init(inside_car) := 0;
-        --init(progress) := 0;
-        
-        --#for index in 1..10 {
-        --init(speeds[index]) := 20;
-        --}
-
-        --#for index in 1..10 {
-        --init(froms[index]) := {BOTTOM, TOP, RIGHT, LEFT};
-        --}
-
-        --#for index in 1..10 {
-        --init(tos[index]) := {BOTTOM, TOP, RIGHT, LEFT};
-        --}
-
-
-        --#for index in 1..10 {
-        --next(speeds[index]) := case
-        --    index = inside_car : {1,2,3,4,5,6,7,8,9,10};
-        --    index != inside_car : speeds[index];
-        --esac;
-        --}
-
-        next(car0.speed) := case
-            car0.speed = max_speed : car0.speed;
-            car0.speed < 3 : 3;
-            TRUE : {car0.speed - 3, car0.speed};
-        esac;
-        next(car1.speed) := case
-            car1.speed > max_speed - 2: car1.speed;
-            car1.speed < 3 : 3;
-            TRUE : {car1.speed - 3, car1.speed};
+        init(time) := 0;
+        next(time) := case
+            time = max_time : time;
+            TRUE : time + 1;
         esac;
 
-        --next(car0.speed) := car0.speed;
-        --next(car1.speed) := car1.speed;
-
-        -- EVOLUTION --
-        -- niente.
-
-
-
-
-
-
-
-
+        #for Index in 1..2 {
+            next(carIndex.speed) := case
+                carIndex.speed <= 3 : {1, 2, 3};
+                TRUE : {carIndex.speed - 3, carIndex.speed};
+            esac;
+        }
 
 
 
 MODULE main
     VAR
-        --<<for Index in 1..4
-        --cell_Index : cell(Index);>>
-        car1 : car(1, BOTTOM, TOP, 8, 0, cell_1);
-        car2 : car(2, LEFT, RIGHT, 18, 0, cell_1);
-        cell_1 : cell(1, car1, car2);
+
+        car1 : car(1, BOTTOM, TOP, 15, INTERSECTION);
+        car2 : car(2, LEFT, RIGHT, 28, INTERSECTION);
+        --car3 : car(3, TOP, BOTTOM, 1, INTERSECTION);
+        INTERSECTION : intersection(car1, car2);
 
     SPEC
-        --EF car1.tcl[car1.tcl_index] = car2.tcl[car2.tcl_index]
-         ! ( EG ( (car1.position != 0 & car1.position != 0) -> (car1.position != car2.position) ) )
-        --<<for Index in 1..4
-        --car_Index : car(cell_Index);>>
 
+
+         ( AF 
+            -- INTERSECTION.time = INTERSECTION.max_time |
+            -- qualcuno va a sbatte.
+            (
+            ( car1.INSIDE & car2.INSIDE & car1.position = car2.position ) 
+            --( car1.INSIDE & car3.INSIDE & car1.position = car3.position ) |
+            --( car3.INSIDE & car2.INSIDE & car3.position = car2.position )
+            )
+         )
 
 
 
@@ -127,7 +71,7 @@ MODULE main
 
 
 ------------   CAR  -------------
-MODULE car(id_in, from_in, to_in, speed_in, distance_from_intersection_in, cell_in)
+MODULE car(id_in, from_in, to_in, speed_in, cell_in)
     DEFINE
         -- size of the edge of each cell (meters)
         cell_size := 5;
@@ -138,14 +82,18 @@ MODULE car(id_in, from_in, to_in, speed_in, distance_from_intersection_in, cell_
         -- number of lanes
         L := 2;
 
+        -- position when exited
+        max_position := (L * L) + 1;
+
         -- max length of a tcl -1 (trailing -1 is needed because array indexes start with 0)
-        len := L + 2;
+        len := L + 2; -- TODO: Not general!
 
         -- simulation steps in a second
         steps_per_second := 10;
 
         -- max cell progress
-        max_progress := 100;
+        max_cell_progress := 100;
+
         
         -- max speed (cell/max_progress per simulation step) (14 m/s ~ 50 km/h)
         max_speed := (max_progress * 14) / (cell_size * steps_per_second);
@@ -154,9 +102,16 @@ MODULE car(id_in, from_in, to_in, speed_in, distance_from_intersection_in, cell_
         N := 100;
 
         -- max distance from intersection expressed in (cell length in meters)/max_progress
-        max_distance_from_intersection := max_progress;
+        dist_from_intersection := 100;
+
+        -- max progress in cell or outside intersection
+        max_progress := max(max_cell_progress, dist_from_intersection);
 
         position := tcl[tcl_index];
+        APPROACHING := position = 0;
+        EXITED      := position = max_position;
+        --INSIDE      := !EXITED & !APPROACHING; --position != 0;
+        INSIDE := position > 0 & position < max_position;
 
     FROZENVAR
     -- forzenvars don't change in time
@@ -164,21 +119,16 @@ MODULE car(id_in, from_in, to_in, speed_in, distance_from_intersection_in, cell_
         -- car id. Used to compute priority.
         id : 0..N;
 
-        -- trajectory cell list (list of vec2)
-        tcl : array 0..len of 0..(L*L)+1; -- 0 is out of intersection
+        -- trajectory cell list (list of vec2). len+1 because the car starts at 0 (outside intersection)
+        tcl : array 0..len of 0..max_position; -- 0 is out of intersection
         
         -- list of time of arrival for each cell in tcl
         -- tcl_time : array 0..len of array 0..1 of 0..L;
 
         from : {BOTTOM, TOP, LEFT, RIGHT};
         to:    {BOTTOM, TOP, LEFT, RIGHT};
-
-        distance_from_intersection : 0..max_distance_from_intersection;
     
     VAR
-        -- current position in the intersection grid
-        --position : 0..(L*L); -- 0 is out of intersection
-
         -- current speed in tenth of meters per second
         speed : 0..max_speed;
         
@@ -201,21 +151,14 @@ MODULE car(id_in, from_in, to_in, speed_in, distance_from_intersection_in, cell_
         --    from = LEFT : {BOTTOM, TOP, RIGHT};
         --    from = RIGHT : {BOTTOM, TOP, LEFT};
         --esac;
-
-        init(distance_from_intersection) := 40;
         
         #insert_string { tcl_initialization2x2 }
 
-        --init(tcl_time[0]) := distance_from_intersection / speed;
-        --init(tcl_time[1]) := tcl_time[0] + cell_size * max_progress / speed;
 
         init(tcl_index) := 0;
-        --init(position) := 0;
 
         init(speed) := speed_in;
-        --init(speed) := cell_in.speeds[id];
 
-        --init(cell_progress) := max_progress - distance_from_intersection;
         init(cell_progress) := 0;
 
         -- also tcl_time should be initialized with a script
@@ -224,27 +167,21 @@ MODULE car(id_in, from_in, to_in, speed_in, distance_from_intersection_in, cell_
 
 
         -- SIMULATION --
-        --next(speed) := speed; --{speed-1, speed, speed+1};
         next(tcl_index) := case
-            tcl_index = len : len;
-            cell_progress + speed >  max_progress: tcl_index + 1;
-            cell_progress + speed <= max_progress: tcl_index;
+            EXITED : tcl_index;
+            APPROACHING & (cell_progress + speed >  dist_from_intersection) : min(len, tcl_index + 1);
+            APPROACHING & (cell_progress + speed <=  dist_from_intersection) : tcl_index;
+            INSIDE & (cell_progress + speed >  max_progress) : min(len, tcl_index + 1);
+            INSIDE & (cell_progress + speed <= max_progress) : tcl_index;
         esac;
+
+
         
         next(cell_progress) := case
-            cell_progress + speed >  max_progress : min(cell_progress + speed  - max_progress, max_progress);
-            cell_progress + speed <= max_progress : min(cell_progress + speed, max_progress);
+            EXITED : cell_progress;
+
+            APPROACHING & cell_progress + speed >  dist_from_intersection : min(cell_progress + speed  - dist_from_intersection, dist_from_intersection);
+            APPROACHING & cell_progress + speed <= dist_from_intersection : min(cell_progress + speed, dist_from_intersection);            
+            INSIDE & cell_progress + speed >  max_progress : min(cell_progress + speed  - max_progress, max_progress);
+            INSIDE & cell_progress + speed <= max_progress : min(cell_progress + speed, max_progress);
         esac;
-
-        --next(position) := case
-        --  tcl_index = -1 : 0;
-        --  tcl_index >= 0  : tcl[tcl_index];
-        --esac;
-
-
-
-
-
-
-
-

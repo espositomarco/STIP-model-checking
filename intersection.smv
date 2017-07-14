@@ -1,23 +1,28 @@
-MODULE intersection(car1, car2, car3)
+-- Planning...
+
+-- The value of a define is visible in every preprocessing scope.
+#define { num_cars = 2 }
+
+MODULE intersection( #list [i] in 1..num_cars {car[i]} )
 
     DEFINE
-        accel := 6;
-        decel := 12;
+        num_cars := #{num_cars}; -- emplace the value of 'num_cars' given during preprocessing step (inside define{ })
+        accel := 1;
+        decel := 0;
+
     FROZENVAR
 
     VAR
 
     ASSIGN 
-        #for Index in 1..3 {
-            --next(carIndex.tcl_index) := min(carIndex.tcl_index + 1, carIndex.max_tcl_index);
-            --next(carIndex.speed) := {maxxcarIndex.speed -3,carIndex.speed,mincarIndex.speed+3};
-            next(carIndex.speed) := case
-                carIndex.speed + accel > carIndex.max_speed : {carIndex.speed - decel, carIndex.speed};
-                carIndex.speed - decel < 0 : {carIndex.speed, carIndex.speed + accel};
-               TRUE : {carIndex.speed - decel, carIndex.speed, carIndex.speed + accel};
+        #for [i] in 1..num_cars {
+            next(car[i].speed) := case
+                car[i].speed + accel > car[i].max_speed : {car[i].speed - decel, car[i].speed};
+                car[i].speed - decel < 0 : {car[i].speed, car[i].speed + accel};
+               TRUE : {car[i].speed - decel, car[i].speed, car[i].speed + accel};
             esac;
-        --next(carIndex.speed) := carIndex.speed;
         }
+        --next(carIndex.speed) := carIndex.speed;
 
 -----------------------------------------------------------------------------------------------------------------------
 
@@ -73,13 +78,34 @@ MODULE main
         car1 : car(TOP, BOTTOM, 10);
         car2 : car(RIGHT, BOTTOM, 30);
         car3 : car(LEFT, RIGHT, 5);
-        intersection : intersection(car1, car2, car3);
+        intersection : intersection( #list i in 1..num_cars {cari} );
+
+    DEFINE
+        #for X in 1..(num_cars-1) {
+            #for Y in (X+1)..num_cars {
+                carXcarY_crash := (carX.CROSSING & carY.CROSSING & carX.position = carY.position );
+            }
+        }
+
 
     CTLSPEC
-         ---AG ( (( car1.CROSSING & car2.CROSSING ) -> car1.position != car2.position) &
-         ---(( car1.CROSSING & car3.CROSSING ) -> car1.position != car3.position) &
-         ---(( car3.CROSSING & car2.CROSSING ) -> car3.position != car2.position) )
+        -- Planning:
+        -- For each possible future, at some point a crash happens. Find me a counterexample.
+        --AF (
+        --#for X in 1..(num_cars-1) {
+        --    #for Y in (X+1)..num_cars { 
+        --        carXcarY_crash |
+        --    }
+        --} FALSE)
 
-        AF ( ( ( car1.CROSSING & car2.CROSSING ) & car1.position = car2.position) |
-        ( ( car1.CROSSING & car3.CROSSING ) & car1.position = car3.position) |
-        ( ( car2.CROSSING & car3.CROSSING ) & car2.position = car3.position)  )
+        -- Safety:
+        -- There exist a possible future in which no crash happens (forever). Check this, without returning the plan.
+        EG (
+        #for X in 1..(num_cars-1) {
+            #for Y in (X+1)..num_cars { 
+                !carXcarY_crash &
+            }
+        } TRUE)
+
+        -- Worth noticing: Planning = !Safety (by De Morgan's law)
+

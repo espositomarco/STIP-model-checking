@@ -1,6 +1,7 @@
 -- Planning...
 
 -- The value of a define is visible in every preprocessing scope.
+
 #define { num_cars = 2 }
 
 MODULE intersection( #list [i] in 1..num_cars {car[i]} )
@@ -8,18 +9,25 @@ MODULE intersection( #list [i] in 1..num_cars {car[i]} )
     DEFINE
         num_cars := #{num_cars}; -- emplace the value of 'num_cars' given during preprocessing step (inside define{ })
         accel := 1;
-        decel := 0;
-
+        decel := 3;
+        --max_time := 40;
     FROZENVAR
 
     VAR
+        --time : 0..max_time;
 
-    ASSIGN 
+    ASSIGN
+        --init(time) := max_time;
+        --next(time) := case
+        --    time > 0 : time - 1;
+        --    time = 0 : time;
+        --esac;
+
         #for [i] in 1..num_cars {
             next(car[i].speed) := case
                 car[i].speed + accel > car[i].max_speed : {car[i].speed - decel, car[i].speed};
                 car[i].speed - decel < 0 : {car[i].speed, car[i].speed + accel};
-               TRUE : {car[i].speed - decel, car[i].speed, car[i].speed + accel};
+                TRUE : {car[i].speed - decel, car[i].speed, car[i].speed + accel};
             esac;
         }
         --next(carIndex.speed) := carIndex.speed;
@@ -32,7 +40,7 @@ MODULE car(from_in, to_in, speed_in)
         lanes := 2;
         max_tcl_index := lanes + 2;
         max_position := (lanes * lanes) + 1;
-        max_speed := 30;
+        max_speed := 14;
         max_progress := 100;
 
         position := tcl[tcl_index];
@@ -52,7 +60,7 @@ MODULE car(from_in, to_in, speed_in)
         progress : 0..max_progress;
 
     ASSIGN
-        #insert_string {tcl_initialization2x2 }
+        #insert_string { tcl_initialization2x2 }
 
         init(tcl_index) := 0;
 
@@ -62,22 +70,24 @@ MODULE car(from_in, to_in, speed_in)
         init(progress) := 0;
 
         next(progress) := case
-            EXITING &  progress + speed > max_progress : max_progress;
-            progress + speed > max_progress : 0;
-            progress + speed <= max_progress : progress+speed;
+            EXITING & progress + speed >= max_progress : max_progress;
+            progress + speed >= max_progress : progress + speed - max_progress;
+            progress + speed < max_progress : progress + speed;
         esac;
 
         next(tcl_index) := case
-            tcl_index != max_tcl_index & progress+speed > max_progress : tcl_index + 1;
+            tcl_index != max_tcl_index & progress + speed >= max_progress : tcl_index + 1;
             TRUE : tcl_index;
         esac;
 
 
 MODULE main 
     VAR
-        car1 : car(TOP, BOTTOM, 10);
-        car2 : car(RIGHT, BOTTOM, 30);
-        car3 : car(LEFT, RIGHT, 5);
+        car1 : car(TOP,    BOTTOM,  #{speed[1]} );
+        car2 : car(RIGHT,  BOTTOM,  #{speed[2]} );
+        #if num_cars>=3 { car3 : car(LEFT,   RIGHT,   #{speed[3]}); }
+        #if num_cars>=4 { car4 : car(BOTTOM, TOP,     #{speed[4]}); }
+        
         intersection : intersection( #list i in 1..num_cars {cari} );
 
     DEFINE
@@ -89,23 +99,29 @@ MODULE main
 
 
     CTLSPEC
+        --!((EF (car1.position = 5 & car2.position = 5)) & EG !car1car2_crash)
+        --EF !car1car2_crash) -> AG (!car1.EXITING & !car2.EXITING)
+        --(EG !car1car2_crash) & (AF (car1.EXITING & car2.EXITING))
+        --(EG !car1car2_crash) & (AF (car1.EXITING & car2.EXITING))
+        -- Worth noticing: Planning = !Safety (by De Morgan's law)
+        
         -- Planning:
-        -- For each possible future, at some point a crash happens. Find me a counterexample.
-        --AF (
-        --#for X in 1..(num_cars-1) {
-        --    #for Y in (X+1)..num_cars { 
-        --        carXcarY_crash |
-        --    }
-        --} FALSE)
+        -- For each possible path, at some point a crash happens. Find me a counterexample.
+
+        AF (
+        #for X in 1..(num_cars-1) {
+            #for Y in (X+1)..num_cars { 
+                carXcarY_crash |
+            }
+        } FALSE)
 
         -- Safety:
         -- There exist a possible future in which no crash happens (forever). Check this, without returning the plan.
-        EG (
-        #for X in 1..(num_cars-1) {
-            #for Y in (X+1)..num_cars { 
-                !carXcarY_crash &
-            }
-        } TRUE)
+        --EG (
+        --#for X in 1..(num_cars-1) {
+        --    #for Y in (X+1)..num_cars { 
+        --        !carXcarY_crash &
+        --    }
+        --} TRUE)
 
-        -- Worth noticing: Planning = !Safety (by De Morgan's law)
 

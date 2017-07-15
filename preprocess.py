@@ -3,7 +3,10 @@
 
 import sys
 from precomputed_code import tcl_initialization2x2
-from typing import Iterable
+from typing import Iterable, List
+
+speed = [None] * 5
+
 
 def range_string(text : str) -> Iterable[int] :
     start, end = text.split('..')
@@ -35,10 +38,19 @@ def process_body_eval(body: str) -> str:
     message = '-- Code generated as <eval_python> (preprocess.py)\n'
     return message, str(eval_body)
 
+
 def process_body_exec(body: str) -> str:
     exec_body = exec(body.strip())
     message = '-- Code generated as <exec_python> (preprocess.py)\n'
     return message, ''
+
+
+def process_body_if(command: str, body : str) -> str:
+    message = '-- Code generated as <if> (preprocess.py)\n'
+    if eval(command[2:].strip()):
+        return message, body
+    return message, ''
+
 
 def process_body_define(body: str) -> str:
     var, val = body.strip().split('=')
@@ -70,12 +82,15 @@ def process_body(command : str, body : str) -> str :
         return process_body_insert_string(body)
     if command == 'eval':
         return process_body_eval(body)
+    if command.startswith('if'):
+        return process_body_if(command, body)
     if command == '':
         return process_body_eval(body)
     if command == 'exec':
         return process_body_exec(body)
     if command == 'define':
         return process_body_define(body)
+
     try:
         return eval(command)
     except:
@@ -118,7 +133,7 @@ def find_closing_token(text: str, start: int, opening : str = '{', closing : str
     return -1
 
 
-def preprocess(text : str) -> str :
+def preprocess(text : str, args : List[str] = []) -> str :
     preprocess_token = '#'
     start_token = '{'
     end_token = '}'
@@ -143,23 +158,17 @@ def preprocess(text : str) -> str :
 
 
 if __name__ == '__main__':
-    # text = "012345(0(89)sd)sffs"
-    # i = find_closing_token(text, 6,'(', ')')
-    # print(text[6:])
-    # print(text[i:])
-    # exit(0)
 
+    speed[1] = 10
+    speed[2] = 14
+    speed[3] = 5
+    speed[4] = 10
 
     input_name = sys.argv[1]
-    input_file = open(input_name, 'r')
-
-    output_name = input_name.split('.')[0] + '_processed.' + input_name.split('.')[1]
-    output_file = open(output_name, 'w')
+    output_name = input_name.replace('.', '_processed.')
     
-    input_text = input_file.read()
+    with open(input_name, 'r') as input_file:
+        out_text = preprocess(input_file.read(), sys.argv[2:])
 
-    out_text = preprocess(input_text)
-    output_file.write(out_text)
-
-    input_file.close()
-    output_file.close()
+    with open(output_name, 'w') as output_file:
+        output_file.write(out_text)

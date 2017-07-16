@@ -2,7 +2,6 @@
 
 -- The value of a define is visible in every preprocessing scope.
 
-#define { num_cars = 2 }
 
 MODULE intersection( #list [i] in 1..num_cars {car[i]} )
 
@@ -19,14 +18,15 @@ MODULE intersection( #list [i] in 1..num_cars {car[i]} )
     ASSIGN
         --init(time) := max_time;
         --next(time) := case
-        --    time > 0 : time - 1;
-        --    time = 0 : time;
+        --    time = 0 : 0;
+        --    TRUE : time - 1;
         --esac;
 
         #for [i] in 1..num_cars {
             next(car[i].speed) := case
-                car[i].speed + accel > car[i].max_speed : {car[i].speed - decel, car[i].speed};
-                car[i].speed - decel < 0 : {car[i].speed, car[i].speed + accel};
+                car[i].EXITING : car[i].speed;
+                car[i].speed + accel > car[i].max_speed : {car[i].speed - decel, car[i].speed, car[i].max_speed};
+                car[i].speed - decel < 0 : {0, car[i].speed, car[i].speed + accel};
                 TRUE : {car[i].speed - decel, car[i].speed, car[i].speed + accel};
             esac;
         }
@@ -40,7 +40,7 @@ MODULE car(from_in, to_in, speed_in)
         lanes := 2;
         max_tcl_index := lanes + 2;
         max_position := (lanes * lanes) + 1;
-        max_speed := 14;
+        max_speed := #{ max_speed };
         max_progress := 100;
 
         position := tcl[tcl_index];
@@ -70,7 +70,7 @@ MODULE car(from_in, to_in, speed_in)
         init(progress) := 0;
 
         next(progress) := case
-            EXITING & progress + speed >= max_progress : max_progress;
+            EXITING : progress; -- & progress + speed >= max_progress : max_progress;
             progress + speed >= max_progress : progress + speed - max_progress;
             progress + speed < max_progress : progress + speed;
         esac;
@@ -84,7 +84,7 @@ MODULE car(from_in, to_in, speed_in)
 MODULE main 
     VAR
         car1 : car(TOP,    BOTTOM,  #{speed[1]} );
-        car2 : car(RIGHT,  BOTTOM,  #{speed[2]} );
+        car2 : car(LEFT,  RIGHT,  #{speed[2]} );
         #if num_cars>=3 { car3 : car(LEFT,   RIGHT,   #{speed[3]}); }
         #if num_cars>=4 { car4 : car(BOTTOM, TOP,     #{speed[4]}); }
         
@@ -97,23 +97,56 @@ MODULE main
             }
         }
 
+        
+        cars_exited := #for Y in 1..num_cars { carY.EXITING & } TRUE;
+        --cars_exited := car1.EXITING & car2.EXITING & car3.EXITING;        
 
-    CTLSPEC
-        --!((EF (car1.position = 5 & car2.position = 5)) & EG !car1car2_crash)
-        --EF !car1car2_crash) -> AG (!car1.EXITING & !car2.EXITING)
+
+    LTLSPEC
+        #if num_cars == 2 { F ( car1car2_crash | G !cars_exited ) }
+        #if num_cars == 3 { F ( car1car2_crash | car1car2_crash | car2car3_crash | G !cars_exited ) }
+    --CTLSPEC
+
+        --(
+        --AF ( AG (!cars_exited)  | AF (car1car2_crash) )
+        --AF ( !car1car2_crash | AG AF !cars_exited )
+        --)
+    --FAIRNESS    
+        --F (car1.EXITING & car2.EXITING)
+        --! car1car2_crash
+
+        --! (EG ( 
+        --    !car1car2_crash |
+        --    EF (car1.EXITING & car2.EXITING)
+        --))
+
+            --(EG (AG cars_exited)))
+        --|
+        --AF ( car1car2_crash )
+        --!EF (car1.EXITING & car2.EXITING)
+        --AG ! (car1.EXITING & car2.EXITING)
+
+
+        --! (EF (AG  (car1.EXITING & car2.EXITING))) -- questo fa uscire le macchine
+        --    (AG (EF !(car1.EXITING & car2.EXITING))) -- questo fa uscire le macchine
+
+
+        --AF ( car1car2_crash | AG ( AG !car1.EXITING  car2.EXITING) )
+        --AF ( car1car2_crash ) | 
+        -- AG ( !car1.EXITING & !car2.EXITING )
+
         --(EG !car1car2_crash) & (AF (car1.EXITING & car2.EXITING))
         --(EG !car1car2_crash) & (AF (car1.EXITING & car2.EXITING))
         -- Worth noticing: Planning = !Safety (by De Morgan's law)
         
         -- Planning:
         -- For each possible path, at some point a crash happens. Find me a counterexample.
-
-        AF (
-        #for X in 1..(num_cars-1) {
-            #for Y in (X+1)..num_cars { 
-                carXcarY_crash |
-            }
-        } FALSE)
+        --AF (
+        --#for X in 1..(num_cars-1) {
+        --    #for Y in (X+1)..num_cars { 
+        --        carXcarY_crash |
+        --    }
+        --} FALSE)
 
         -- Safety:
         -- There exist a possible future in which no crash happens (forever). Check this, without returning the plan.

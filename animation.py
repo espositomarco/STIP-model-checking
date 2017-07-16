@@ -1,6 +1,7 @@
 # from graphics import *
 
-positions = [None] * 4
+positions = [None] * 3
+speeds = [None] * 3
 positions[0] = 5
 # cars = [Circle] * 4
 # colors = [str] * 4
@@ -34,21 +35,30 @@ if __name__ == '__main__':
     states = text.split('State:')
     states = states[1:]
 
+    print('\n state    positions        speeds' )
+
     for i,state in enumerate(states):
         lines = state.splitlines()
-        position_changed = False
+        something_changed = False
         for line in lines:
+            if 'crash = TRUE' in line:
+                print('crash : ' + line.strip() )
             if '.position' in line:
-                position_changed = True
+                something_changed = True
                 car, pos = line.strip().split('=')
                 name, _ = car.split('.')
                 positions[eval(name[3:]) - 1] = eval(pos)
+            if '.speed' in line:
+                something_changed = True
+                car, speed = line.strip().split('=')
+                name, _ = car.split('.')
+                speeds[eval(name[3:]) - 1] = eval(speed)
         
-        if position_changed:
-            print(positions)
+        if something_changed:
+            print(str(i),':', str(positions) + ' ' + str(speeds) )
                 # print(i, '\t'+line.strip())
         
-        # if position_changed:
+        # if something_changed:
             # for i in range(len(win.items)):
                 # print(i, len(win.items))
             #     pos = positions[i]

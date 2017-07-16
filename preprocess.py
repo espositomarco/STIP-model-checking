@@ -2,6 +2,7 @@
 # > python preprocess.py filename.smv
 
 import sys
+import os
 from precomputed_code import tcl_initialization2x2
 from typing import Iterable, List
 
@@ -138,6 +139,9 @@ def preprocess(text : str, args : List[str] = []) -> str :
     start_token = '{'
     end_token = '}'
     preprocess_start = text.find(preprocess_token)
+
+
+
     while preprocess_start > 0:
         start = text.find(start_token, preprocess_start)
    
@@ -159,16 +163,34 @@ def preprocess(text : str, args : List[str] = []) -> str :
 
 if __name__ == '__main__':
 
-    speed[1] = 10
-    speed[2] = 14
-    speed[3] = 5
+    speed[1] = 4
+    speed[2] = 0
+    speed[3] = 4
     speed[4] = 10
 
     input_name = sys.argv[1]
+    max_speed = 14
+    num_cars = 2 
+    
     output_name = input_name.replace('.', '_processed.')
     
-    with open(input_name, 'r') as input_file:
-        out_text = preprocess(input_file.read(), sys.argv[2:])
+    for v1 in range(0,max_speed+1):
+        for v2 in range(0,max_speed+1):
+    # for v1 in range(14, 14+1):
+        # for v2 in range(5, 5+1):
+            speed[1] = v1
+            speed[2] = v2
+            with open('animations.txt', 'a') as file:
+                file.write('SPEEDS: ' + str(v1) + ', ' + str(v2) )
+            
+            with open(input_name, 'r') as input_file:
+                out_text = preprocess(input_file.read(), sys.argv[2:])
 
-    with open(output_name, 'w') as output_file:
-        output_file.write(out_text)
+            with open(output_name, 'w') as output_file:
+                output_file.write(out_text)
+
+            command = "time /Users/giacomo/dev/NuSMV-2.6.0-Darwin/bin/NuSMV "+output_name+" > log.txt"
+            print('command =', command)
+            os.system(command)
+            command = '~/dev/cpython3/bin/python animation.py >> animations.txt'
+            os.system(command)

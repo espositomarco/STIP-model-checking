@@ -1,8 +1,6 @@
 # from graphics import *
 
-positions = [None] * 3
-speeds = [None] * 3
-positions[0] = 5
+
 # cars = [Circle] * 4
 # colors = [str] * 4
 # colors[0] = color_rgb(255,0,0)
@@ -22,27 +20,32 @@ positions[0] = 5
 
 
 
-if __name__ == '__main__':
+
+def animate_log(log_filename = 'log.txt') -> str:
     # size = 100
     # win = GraphWin("My Circle", size, size, autoflush=False)
     # for i in positions:
     #     c = Circle(xy_position_index(0, 100), 10)
     #     win.addItem(c)
+    positions = [None] * 3
+    speeds = [None] * 3
+    positions[0] = 5
 
-    with open('log.txt') as log:
+    output = ''
+
+    with open(log_filename) as log:
         text = log.read()
 
     states = text.split('State:')
     states = states[1:]
 
-    print('\n state    positions        speeds' )
 
     for i,state in enumerate(states):
         lines = state.splitlines()
         something_changed = False
         for line in lines:
             if 'crash = TRUE' in line:
-                print('crash : ' + line.strip() )
+                output += 'crash : ' + line.strip() + '\n'
             if '.position' in line:
                 something_changed = True
                 car, pos = line.strip().split('=')
@@ -55,19 +58,12 @@ if __name__ == '__main__':
                 speeds[eval(name[3:]) - 1] = eval(speed)
         
         if something_changed:
-            print(str(i),':', str(positions) + ' ' + str(speeds) )
-                # print(i, '\t'+line.strip())
-        
-        # if something_changed:
-            # for i in range(len(win.items)):
-                # print(i, len(win.items))
-            #     pos = positions[i]
-            #     win.items[i] = Circle(xy_position_index(pos, 100), 10)
-            # win.redraw()
-            # win.getMouse() # Pause to view result
+            output += str(i) + ': ' + str(positions) + ' ' + str(speeds) + '\n\n'
+
+    return output
 
 
-    # win.close()    # Close window when done
 
-
+if __name__ == '__main__':
+    log_filename()
 

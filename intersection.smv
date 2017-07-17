@@ -1,9 +1,6 @@
--- Planning...
-
--- The value of a define is visible in every preprocessing scope.
 
 
-MODULE intersection( #list [i] in 1..num_cars {car[i]} )
+MODULE intersection( #list(,) [i] in 1..num_cars {car[i]} )
 
     DEFINE
         num_cars := #{num_cars}; -- emplace the value of 'num_cars' given during preprocessing step (inside define{ })
@@ -88,7 +85,7 @@ MODULE main
         #if num_cars>=3 { car3 : car(LEFT,   RIGHT,   #{speed[3]}); }
         #if num_cars>=4 { car4 : car(BOTTOM, TOP,     #{speed[4]}); }
         
-        intersection : intersection( #list i in 1..num_cars {cari} );
+        intersection : intersection( #list(,) i in 1..num_cars {cari} );
 
     DEFINE
         #for X in 1..(num_cars-1) {
@@ -98,13 +95,25 @@ MODULE main
         }
 
         
-        cars_exited := #for Y in 1..num_cars { carY.EXITING & } TRUE;
+        --cars_exited := #for Y in 1..num_cars { carY.EXITING & } TRUE;
+        cars_exited := #list(&) Y in 1..num_cars { carY.EXITING };
         --cars_exited := car1.EXITING & car2.EXITING & car3.EXITING;        
 
 
     LTLSPEC
-        #if num_cars == 2 { F ( car1car2_crash | G !cars_exited ) }
-        #if num_cars == 3 { F ( car1car2_crash | car1car2_crash | car2car3_crash | G !cars_exited ) }
+        --#if num_cars == 2 { F ( car1car2_crash | G !cars_exited ) }
+        --#if num_cars == 3 { F ( car1car2_crash | car1car2_crash | car2car3_crash | G !cars_exited ) }
+
+        F (
+        #for X in 1..(num_cars-1) {
+            #for Y in (X+1)..num_cars { 
+                carXcarY_crash |
+            }
+        } G !cars_exited)
+
+        --#list(|) [i] in 1..num_cars-1 {
+        --        car[i]car[j]_crash
+        --}
     --CTLSPEC
 
         --(

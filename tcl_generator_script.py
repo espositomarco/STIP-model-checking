@@ -39,6 +39,7 @@ from typing import List, Dict
 
 
 paths_dict2 = {} #type: Dict[str, List[int]]
+paths_dict2_int = {} #type: Dict[str, List[int]]
 paths_dict2['2_BOTTOM_BOTTOM'] = [0,0,0,0,5]
 paths_dict2['2_TOP_TOP'] = [0,0,0,0,5]
 paths_dict2['2_RIGHT_RIGHT'] = [0,0,0,0,5]
@@ -56,6 +57,41 @@ paths_dict2['2_LEFT_RIGHT'] = [0,3,4,5,5]
 paths_dict2['2_LEFT_BOTTOM'] = [0,3,5,5,5]
 paths_dict2['2_LEFT_TOP'] = [0,3,4,2,5]
 
+paths_dict2_int['[3][3]'] = [0,0,0,0,5]
+paths_dict2_int['[1][1]'] = [0,0,0,0,5]
+paths_dict2_int['[2][2]'] = [0,0,0,0,5]
+paths_dict2_int['[4][4]'] = [0,0,0,0,5]
+paths_dict2_int['[3][1]'] = [0,4, 2, 5,5]
+paths_dict2_int['[3][2]'] = [0,4, 5, 5,5]
+paths_dict2_int['[3][4]'] = [0,4,2,1,5]
+paths_dict2_int['[1][3]'] =  [0,1,3,5,5]
+paths_dict2_int['[1][4]']  =   [0,1,5,5,5]
+paths_dict2_int['[1][2]']  = [0,1,3,4,5]
+paths_dict2_int['[2][4]'] = [0,2,1,5,5]
+paths_dict2_int['[2][1]'] = [0,2,5,5,5]
+paths_dict2_int['[2][3]'] = [0,2,1,3,5]
+paths_dict2_int['[4][2]'] = [0,3,4,5,5]
+paths_dict2_int['[4][3]'] = [0,3,5,5,5]
+paths_dict2_int['[4][1]'] = [0,3,4,2,5]
+
+
+paths_list_int = [ None , [None] * 5 , [None] * 5 , [None] * 5 ,[None] * 5 ]
+paths_list_int[3][3] = [0,0,0,0,5]
+paths_list_int[1][1] = [0,0,0,0,5]
+paths_list_int[2][2] = [0,0,0,0,5]
+paths_list_int[4][4] = [0,0,0,0,5]
+paths_list_int[3][1] = [0,4, 2, 5,5]
+paths_list_int[3][2] = [0,4, 5, 5,5]
+paths_list_int[3][4] = [0,4,2,1,5]
+paths_list_int[1][3] =  [0,1,3,5,5]
+paths_list_int[1][4]  =   [0,1,5,5,5]
+paths_list_int[1][2]  = [0,1,3,4,5]
+paths_list_int[2][4] = [0,2,1,5,5]
+paths_list_int[2][1] = [0,2,5,5,5]
+paths_list_int[2][3] = [0,2,1,3,5]
+paths_list_int[4][2] = [0,3,4,5,5]
+paths_list_int[4][3] = [0,3,5,5,5]
+paths_list_int[4][1] = [0,3,4,2,5]
 
 paths_dict4 = {} #type: Dict[str, List[int]]
 paths_dict4['4_BOTTOM_BOTTOM'] = [0,0,0,0,0]
@@ -95,7 +131,55 @@ def print_tcl_initialization_4x4():
         print('esac;')
 
 
-print_tcl_initialization_2x2()
+def first_conflicting_index(tcl1 : List[int], tcl2 : List[int]) -> int:
+	for i in range(1, len(tcl1)):
+		if tcl1[i] == 5: continue
+		if tcl1[i] == 0: continue
+		for j in range(1, len(tcl2)):
+			if tcl2[j] == 5: continue
+			#print('ho00', tcl1[i], tcl2[j])
+			
+			if tcl1[i] == 0: continue
+			if tcl2[j] == 0: continue
+			if tcl1[i] == tcl2[j]:
+				#print('ecco')
+				return i
+	return 0
+
+# for k1, tcl1 in paths_dict2_int.items():
+# 	for k2, tcl2 in paths_dict2_int.items():
+# 		# print(tcl1, tcl2)
+# 		print('init(conflict'+k1+k2+') := ' + str(first_conflicting_index(tcl1, tcl2)) +';')
+# 		#print('init(conflict'+k1+k2+') := ' + str(first_conflicting_index(tcl1, tcl2)) +';')
+
+res = ''
+for fro in paths_list_int:
+	if fro == None: continue
+	res += '['
+	for tcl1 in fro:
+		if tcl1 == None: continue
+		res += '['
+		for fro2 in paths_list_int:
+			if fro2 == None: continue
+			res += '['
+			for tcl2 in fro2:
+				if tcl2 == None: continue
+				res += str(first_conflicting_index(tcl1, tcl2))  + ', '
+			res += '], '
+		res += '], '
+	res += '], '
+				#print(first_conflicting_index(tcl1, tcl2))
+
+print(res)
+
+
+
+	# for k2, tcl2 in paths_dict2_int.items():
+		# print(tcl1, tcl2)
+		# print('init(conflict'+k1+k2+') := ' + str(first_conflicting_index(tcl1, tcl2)) +';')
+		#print('init(conflict'+k1+k2+') := ' + str(first_conflicting_index(tcl1, tcl2)) +';')
+
+#print_tcl_initialization_2x2()
 
 
 

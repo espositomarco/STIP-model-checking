@@ -1,0 +1,171 @@
+
+MODULE main
+    DEFINE
+        num_cars := 2;
+        THETA := 1;
+
+    FROZENVAR
+        conflict : array 1..4 of array 1..4 of array 1..4 of array 1..4 of 1..4;
+
+
+    VAR
+    
+        car0 : car( 3, 1, 5, 0 );
+        car1 : car( 4, 3, 8, 1 );
+
+    
+        decision0 : array 0..(num_cars - 1) of {-3, 1};
+        decision1 : array 0..(num_cars - 1) of {-3, 1};
+
+
+
+    
+
+
+    DEFINE
+        
+            
+                car0car1_crash := (car0.CROSSING & car1.CROSSING & car0.position = car1.position );
+
+        cars_exited := car0.EXITING& car1.EXITING;
+
+
+
+
+MODULE car(from_in, to_in, speed_in, id_in)
+    DEFINE
+    lanes := 2;
+    max_tcl_index := 4; --lanes + 2;
+    max_position := (lanes * lanes) + 1;
+    max_speed := 8;
+
+    cell_progress := 100; -- progress to cross a cell.
+    max_progress := cell_progress * max_tcl_index;  -- progress to cross the entire intersection.
+
+    tcl_index := progress / cell_progress;
+    position := tcl[tcl_index];
+
+
+    APPROACHING := position <= 0;
+    CROSSING := position > 0 & position < max_position;
+    EXITING := position >= max_position;
+
+    
+        tcl_arrive0 := 1;
+        tcl_arrive1 := 1;
+        tcl_arrive2 := 1;
+        tcl_arrive3 := 1;
+        tcl_arrive4 := 1;
+
+    FROZENVAR
+        id : 0..5;
+        tcl : array 0..max_tcl_index of 0..max_position;
+        
+        from : 1..4; --{ toP, BOTtoM, RIGHT, LEFT};
+        to : 1..4; --{ toP, BOTtoM, RIGHT, LEFT};
+
+
+    VAR
+        acc : {-3, 0, 1};
+        speed : 0..max_speed;
+        progress : 0..max_progress;
+
+    ASSIGN
+       init(tcl[0]) := 0;
+        init(tcl[1]) := case
+            from = 3 & to = 3 : 0;
+            from = 1 & to = 1 : 0;
+            from = 2 & to = 2 : 0;
+            from = 4 & to = 4 : 0;
+            from = 3 & to = 1 : 4;
+            from = 3 & to = 2 : 4;
+            from = 3 & to = 4 : 4;
+            from = 1 & to = 3 : 1;
+            from = 1 & to = 4 : 1;
+            from = 1 & to = 2 : 1;
+            from = 2 & to = 4 : 2;
+            from = 2 & to = 1 : 2;
+            from = 2 & to = 3 : 2;
+            from = 4 & to = 2 : 3;
+            from = 4 & to = 3 : 3;
+            from = 4 & to = 1 : 3;
+        esac;
+        init(tcl[2]) := case
+            from = 3 & to = 3 : 0;
+            from = 1 & to = 1 : 0;
+            from = 2 & to = 2 : 0;
+            from = 4 & to = 4 : 0;
+            from = 3 & to = 1 : 2;
+            from = 3 & to = 2 : 5;
+            from = 3 & to = 4 : 2;
+            from = 1 & to = 3 : 3;
+            from = 1 & to = 4 : 5;
+            from = 1 & to = 2 : 3;
+            from = 2 & to = 4 : 1;
+            from = 2 & to = 1 : 5;
+            from = 2 & to = 3 : 1;
+            from = 4 & to = 2 : 4;
+            from = 4 & to = 3 : 5;
+            from = 4 & to = 1 : 4;
+        esac;
+        init(tcl[3]) := case
+            from = 3 & to = 3 : 0;
+            from = 1 & to = 1 : 0;
+            from = 2 & to = 2 : 0;
+            from = 4 & to = 4 : 0;
+            from = 3 & to = 1 : 5;
+            from = 3 & to = 2 : 5;
+            from = 3 & to = 4 : 1;
+            from = 1 & to = 3 : 5;
+            from = 1 & to = 4 : 5;
+            from = 1 & to = 2 : 4;
+            from = 2 & to = 4 : 5;
+            from = 2 & to = 1 : 5;
+            from = 2 & to = 3 : 3;
+            from = 4 & to = 2 : 5;
+            from = 4 & to = 3 : 5;
+            from = 4 & to = 1 : 2;
+        esac;
+        init(tcl[4]) := case
+            from = 3 & to = 3 : 5;
+            from = 1 & to = 1 : 5;
+            from = 2 & to = 2 : 5;
+            from = 4 & to = 4 : 5;
+            from = 3 & to = 1 : 5;
+            from = 3 & to = 2 : 5;
+            from = 3 & to = 4 : 5;
+            from = 1 & to = 3 : 5;
+            from = 1 & to = 4 : 5;
+            from = 1 & to = 2 : 5;
+            from = 2 & to = 4 : 5;
+            from = 2 & to = 1 : 5;
+            from = 2 & to = 3 : 5;
+            from = 4 & to = 2 : 5;
+            from = 4 & to = 3 : 5;
+            from = 4 & to = 1 : 5;
+        esac;
+
+
+
+
+       init(from) := from_in;
+       init(to) := to_in;
+       init(speed) := speed_in;
+       init(id) := id_in;
+       init(progress) := 0;
+
+       next(progress) := case
+           progress + speed <= max_progress : progress + speed;
+           progress + speed > max_progress : max_progress;
+       esac;
+
+        next(acc) := acc;
+        next(speed) := speed;
+
+
+
+
+
+
+
+

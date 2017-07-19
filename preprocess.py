@@ -4,16 +4,39 @@
 import sys
 import os
 import animation
-from precomputed_code import tcl_initialization2x2
+from precomputed_code import tcl_initialization2x2, sqrt_init
 from typing import Iterable, List
 
-speed = [None] * 5
-num_cars = -1
-max_speed = -1
+lanes = 2
+max_tcl_index = lanes + 2
+speed = [5, 8]
+num_cars = 2
+max_speed = 8
+from_dir = [3, 4] #['BOTTOM', 'LEFT'   ]
+to_dir   = [1, 3] #['TOP'   , 'BOTTOM' ]
+
+throttle = 1
+brake = -3
+
+def my_eval(expr: str):
+    try:
+        return eval(expr)
+    except:
+        print('EVAL ERROR:', expr)
+        exit()
+        return None
+
+
+def int_direction(direction: str) -> int:
+    if direction == 'TOP': return 1
+    if direction == 'RIGHT': return 2
+    if direction == 'BOTTOM': return 3
+    if direction == 'LEFT': return 4
+
 
 def range_string(text : str) -> Iterable[int] :
     start, end = text.split('..')
-    return range(eval(start), eval(end)+1)
+    return range(my_eval(start), my_eval(end)+1)
 
 def process_body_for(command: str, text : str) -> str :
     for_str, varname, in_str, range_str = command.split(' ')
@@ -31,13 +54,15 @@ def process_body_for(command: str, text : str) -> str :
 
 
 def process_body_insert_string(insert_name: str) -> str:
-    insert_string = eval(insert_name.strip())
+    insert_string = my_eval(insert_name.strip())
     message = '-- Code generated as <insert_string> (preprocess.py)\n'
     return message, insert_string
 
 
-def process_body_eval(body: str) -> str:
-    eval_body = eval(body.strip())
+def process_body_my_eval(body: str) -> str:
+    # print(body)
+    eval_body = my_eval(body.strip())
+    # print(body, eval_body)
     message = '-- Code generated as <eval_python> (preprocess.py)\n'
     return message, str(eval_body)
 
@@ -50,7 +75,7 @@ def process_body_exec(body: str) -> str:
 
 def process_body_if(command: str, body : str) -> str:
     message = '-- Code generated as <if> (preprocess.py)\n'
-    if eval(command[2:].strip()):
+    if my_eval(command[2:].strip()):
         return message, body
     return message, ''
 
@@ -89,18 +114,18 @@ def process_body(command : str, body : str) -> str :
     if command == 'insert_string':
         return process_body_insert_string(body)
     if command == 'eval':
-        return process_body_eval(body)
+        return process_body_my_eval(body)
     if command.startswith('if'):
         return process_body_if(command, body)
     if command == '':
-        return process_body_eval(body)
+        return process_body_my_eval(body)
     if command == 'exec':
         return process_body_exec(body)
     if command == 'define':
         return process_body_define(body)
 
     try:
-        return eval(command)
+        return my_eval(command)
     except:
         print('ERROR in process_body\n','commmand:', command, 'body:', body)
         assert(0)
@@ -142,6 +167,12 @@ def find_closing_token(text: str, start: int, opening : str = '{', closing : str
 
 
 def preprocess(text : str, args : List[str] = []) -> str :
+    lines = text.splitlines()
+    text = ''
+    for line in lines:
+        if not line.strip().startswith('--'):
+            text += line + '\n'
+
     preprocess_token = '#'
     start_token = '{'
     end_token = '}'
@@ -167,7 +198,7 @@ def preprocess(text : str, args : List[str] = []) -> str :
 
     return text
 
-def planning(speeds_in: List[int], model: str, output_name) -> str:
+def planning(speeds_in: List[int], from_in: List[str], to_in: List[str], model: str, output_name) -> str:
     # speed[1] = speed_in[0]
     # speed[2] = speed_in[1]
     # with open('animations.txt', 'a') as file:
@@ -177,14 +208,18 @@ def planning(speeds_in: List[int], model: str, output_name) -> str:
     global speed 
     global num_cars
     global max_speed
+    global from_dir
+    global TO
     # print(speed)
     # print(num_cars)
     # print(max_speed)
     speed = speeds_in[:]
-    num_cars = len(speeds_in) - 1
+    from_dir = [ int_direction(x) for x in from_in]
+    to_dir = to_in[:]
+    num_cars = len(speeds_in)
     max_speed = 8
-    # print(speed)
-    # print(num_cars)
+    print(speed)
+    print(num_cars)
     # print(max_speed)
     processed_model = preprocess(model)
 
@@ -208,12 +243,20 @@ def planning(speeds_in: List[int], model: str, output_name) -> str:
         # return ''
 
 
+def compile_NuSMV(output_name: str):
+    command = "time /Users/giacomo/dev/NuSMV-2.6.0-Darwin/bin/NuSMV "+output_name+" > log.txt"
+    print('command:', command)
+    os.system(command)
+
+
 if __name__ == '__main__':
 
-    speed[1] = 4
-    speed[2] = 0
-    speed[3] = 4
-    speed[4] = 10
+
+
+    # speed[1] = 4
+    # speed[2] = 0
+    # speed[3] = 4
+    # speed[4] = 10
 
     input_name = sys.argv[1]
     # max_speed = 14
@@ -229,11 +272,31 @@ if __name__ == '__main__':
     # speed[2] = v2
     # with open('animations.txt', 'a') as file:
         # file.write('SPEEDS: ' + str(v1) + ', ' + str(v2) )
-    
+
     with open(input_name, 'r') as input_file:
         model = input_file.read()
-    
-    anim = planning([None,8,8,3], model, output_name)
-    
+
+    with open(output_name, 'w') as output_file:
+        output_file.write(preprocess(model))
+
+    compile_NuSMV(output_name)
+    # anim = animation.animate_log()
+    # print(anim)
+    exit()
+
+    anim = planning([8,8,4,4],['TOP','RIGHT', 'RIGHT','LEFT'],['BOTTOM','LEFT','BOTTOM','TOP'], model, output_name)
+    # print(anim)
     with open('animation_test.txt', 'a') as out:
         out.write(anim)
+
+
+    
+    # every combination with 2 cars.
+    # for c2_from in ['BOTTOM','TOP', 'RIGHT','LEFT']:
+    #     for c2_to in ['BOTTOM','TOP', 'RIGHT','LEFT']:
+    #         if c2_from == c2_to: continue
+    #         for c1_to in ['LEFT', 'TOP', 'RIGHT']:
+    #             anim = planning([8,8],['BOTTOM', c2_from],[c1_to, c2_to], model, output_name)
+    #             # print(anim)
+    #             with open('animation_test.txt', 'a') as out:
+    #                 out.write(anim)

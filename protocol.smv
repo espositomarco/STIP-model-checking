@@ -1,0 +1,197 @@
+--inizio
+
+MODULE main
+    DEFINE
+        num_cars := #{num_cars};
+        --throttle#{} := 1;
+        --brake := -3;
+        --conflict := [ [ [1,1,1,1] , [1,1,1,1] ] , [  ] ]
+        THETA := 1;
+
+    FROZENVAR
+        conflict : array 1..4 of array 1..4 of array 1..4 of array 1..4 of 1..4;
+
+
+    VAR
+    #for [i] in 0..num_cars-1 {
+        car[i] : car( #{from_dir[[i]]}, #{to_dir[[i]]}, #{speed[[i]]}, [i] );
+    }
+
+    #for [i] in 0..num_cars-1 {
+        decision[i] : array 0..(num_cars - 1) of {#{brake}, #{throttle}};
+    }
+
+
+    --ASSIGN
+
+    --    #for [i] in 0..num_cars-1 {
+    --    #for Index in 0..num_cars-1 {
+    --        init(decision[i][Index]) := #{throttle};
+    --    }
+    --}
+--
+--
+    ---- la decisione rispetto a se' stessa non deve influire.
+    --#for [i] in 0..num_cars-1 {
+    --    next(decision[i][[i]]) := #{throttle};
+    --}
+--
+    --#for [i] in 0..num_cars-1 {
+    --    #for [j] in 0..num_cars-1 {
+    --        #if [j]!=[i] {
+    --            next(decision[i][[j]]) := case
+    --                car[j].EXITING : #{throttle};
+    --                car[j].APPROACHING | car[j].CROSSING : case
+    --                    conflict[car[i].from][car[i].to][car[j].from][car[j].to] = 0 : #{throttle};
+    --                    conflict[car[i].from][car[i].to][car[j].from][car[j].to] != 0 : case
+    --                        car[i].id < car[j].id : #{throttle}; --priorities
+    --                        car[i].id >= car[j].id : case
+    --                            car[i].tcl_exit[ conflict[car[i].from][car[i].to][car[j].from][car[j].to] ]  + --THETA < 
+    --                            car[j].tcl_arrive[ conflict[car[j].from][car[j].to][car[i].from][car[i].to] ] :
+    --                            #{throttle};
+    --                            
+    --                            TRUE : #{brake}; --bleah
+    --                        esac;
+    --                    esac; 
+    --                esac;
+    --            esac;
+    --        }
+    --    }
+    --}
+    
+
+    --next(car0.speed) := case
+    --    car0.progress > car1.progress  : car0.speed;
+    --    car0.progress <= car1.progress : case
+    --        car0.id > car1.id : car0.speed;
+    --        car0.id <= car1.id  : max(0, car0.speed - 1);
+    --    esac;
+    --esac;
+--
+    --next(car1.speed) := case
+    --    car1.progress > car0.progress  : car1.speed;
+    --    car1.progress <= car0.progress : case
+    --        car1.id > car0.id : car1.speed;
+    --        car1.id <= car0.id  : max(1, car1.speed - 0);
+    --    esac;
+    --esac;
+    --#for [i] in 0..num_cars-1 {
+    --    #for [j] in [i]..num_cars-1 {
+    --            next(car[i].speed) := case
+    --                #for [j] in 0..num_cars-1 {
+    --                    #if [j] != [i] {
+    --                        car[i].progress > car[j].progress  : car[i].speed;
+    --                        car[i].progress <= car[j].progress : case
+    --                            car[i].id > car[i].id : car[i].speed;
+    --                            car[i].id <= car[i].id  : max(0, car[i].speed - 1);
+    --                }
+    --                esac;
+    --            esac;
+    --        }   
+    --    }
+    --}
+
+    DEFINE
+        #for X in 0..(num_cars-2) {
+            #for Y in (X+1)..(num_cars-1) {
+                carXcarY_crash := (carX.CROSSING & carY.CROSSING & carX.position = carY.position );
+            }
+        }
+
+        cars_exited := #list(&) Y in 0..(num_cars-1) { carY.EXITING };
+
+
+    --LTLSPEC
+    --F (
+    --#for [i] in 0..(num_cars-2) {
+    --    #for [j] in ([i]+1)..(num_cars-1) { 
+    --        car[i]car[j]_crash |
+    --    }
+    --} G !cars_exited)
+
+
+MODULE car(from_in, to_in, speed_in, id_in)
+    DEFINE
+    --arr := [1,2,4,5];
+    lanes := #{lanes};
+    max_tcl_index := #{max_tcl_index}; --lanes + 2;
+    max_position := (lanes * lanes) + 1;
+    max_speed := #{ max_speed };
+    --#{throttle} := 1;
+    --frenata := -3;
+
+    cell_progress := 100; -- progress to cross a cell.
+    max_progress := cell_progress * max_tcl_index;  -- progress to cross the entire intersection.
+
+    tcl_index := progress / cell_progress;
+    position := tcl[tcl_index];
+
+
+    APPROACHING := position <= 0;
+    CROSSING := position > 0 & position < max_position;
+    EXITING := position >= max_position;
+
+    #for [i] in 0..max_tcl_index {
+        tcl_arrive[i] := 1;
+    }
+
+    FROZENVAR
+        id : 0..5;
+        tcl : array 0..max_tcl_index of 0..max_position;
+        
+        from : 1..4; --{ toP, BOTtoM, RIGHT, LEFT};
+        to : 1..4; --{ toP, BOTtoM, RIGHT, LEFT};
+
+
+        --sqrt : array 0..30 of 0..54;
+    VAR
+        acc : {-3, 0, 1};
+        speed : 0..max_speed;
+        progress : 0..max_progress;
+        --tcl_arrive : array 0..max_tcl_index of 0..500;
+        --tcl_exit : array 0..max_tcl_index of 0..500;
+
+    ASSIGN
+       #{ tcl_initialization2x2 }
+       --#{ sqrt_init }
+
+       --#for [i] in 0..max_tcl_index {
+       --     init(tcl_arrive[[i]]) := 1;
+       --}
+--
+       --#for [i] in 0..max_tcl_index {
+       --     init(tcl_exit[[i]]) := 1;
+       --}
+
+
+       --#for X in 0..max_tcl_index {
+        --    --init(tcl_arrive[X]) := (sqrt[ 4*speed*speed + acc*acc + 4*speed*acc + 8*acc*( X*100 - progress ) ] - --(2 * speed + acc) ) / (2*acc);
+        --    init(tcl_arrive[X]) := 7;
+        --}
+
+       init(from) := from_in;
+       init(to) := to_in;
+       init(speed) := speed_in;
+       init(id) := id_in;
+       init(progress) := 0;
+
+       next(progress) := case
+           progress + speed <= max_progress : progress + speed;
+           progress + speed > max_progress : max_progress;
+       esac;
+
+        next(acc) := acc;
+        next(speed) := speed;
+        ---next(speed) := case
+        ---    speed + acc >= max_speed : max_speed;
+        ---    speed + acc <= 0 : 0;
+        ---    speed + acc > 0 & speed + acc < max_speed : speed + acc;
+        ---esac;
+
+
+
+
+
+
+
+

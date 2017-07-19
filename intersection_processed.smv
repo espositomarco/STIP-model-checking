@@ -1,0 +1,212 @@
+
+
+MODULE intersection( car0, car1, car2, car3 )
+
+    DEFINE
+        num_cars := 4;
+        accel := 1;
+        decel := 3;
+    FROZENVAR
+
+    VAR
+
+    ASSIGN
+
+        
+            next(car0.speed) := case
+                car0.EXITING : car0.speed;
+                car0.speed + accel > car0.max_speed : {car0.speed - decel, car0.speed, car0.max_speed};
+                car0.speed - decel < 0 : {0, car0.speed, car0.speed + accel};
+                TRUE : {car0.speed - decel, car0.speed, car0.speed + accel};
+            esac;
+            next(car1.speed) := case
+                car1.EXITING : car1.speed;
+                car1.speed + accel > car1.max_speed : {car1.speed - decel, car1.speed, car1.max_speed};
+                car1.speed - decel < 0 : {0, car1.speed, car1.speed + accel};
+                TRUE : {car1.speed - decel, car1.speed, car1.speed + accel};
+            esac;
+            next(car2.speed) := case
+                car2.EXITING : car2.speed;
+                car2.speed + accel > car2.max_speed : {car2.speed - decel, car2.speed, car2.max_speed};
+                car2.speed - decel < 0 : {0, car2.speed, car2.speed + accel};
+                TRUE : {car2.speed - decel, car2.speed, car2.speed + accel};
+            esac;
+            next(car3.speed) := case
+                car3.EXITING : car3.speed;
+                car3.speed + accel > car3.max_speed : {car3.speed - decel, car3.speed, car3.max_speed};
+                car3.speed - decel < 0 : {0, car3.speed, car3.speed + accel};
+                TRUE : {car3.speed - decel, car3.speed, car3.speed + accel};
+            esac;
+
+
+MODULE car(from_in, to_in, speed_in)
+
+    DEFINE
+        lanes := 2;
+        max_tcl_index := lanes + 2;
+        max_position := (lanes * lanes) + 1;
+        max_speed := 8;
+        max_progress := 100;
+
+        position := tcl[tcl_index];
+
+        APPROACHING := position <= 0;
+        CROSSING := position > 0 & position < max_position;
+        EXITING := position >= max_position;
+
+    FROZENVAR
+        tcl : array 0..max_tcl_index of 0..max_position;
+        from : { TOP, BOTTOM, RIGHT, LEFT};
+        to : { TOP, BOTTOM, RIGHT, LEFT};
+
+    VAR
+        tcl_index : 0..max_tcl_index;
+        speed : 0..max_speed;
+        progress : 0..max_progress;
+
+    ASSIGN
+        init(tcl[0]) := 0;
+        init(tcl[1]) := case
+            from = BOTTOM & to = BOTTOM : 0;
+            from = TOP & to = TOP : 0;
+            from = RIGHT & to = RIGHT : 0;
+            from = LEFT & to = LEFT : 0;
+            from = BOTTOM & to = TOP : 4;
+            from = BOTTOM & to = RIGHT : 4;
+            from = BOTTOM & to = LEFT : 4;
+            from = TOP & to = BOTTOM : 1;
+            from = TOP & to = LEFT : 1;
+            from = TOP & to = RIGHT : 1;
+            from = RIGHT & to = LEFT : 2;
+            from = RIGHT & to = TOP : 2;
+            from = RIGHT & to = BOTTOM : 2;
+            from = LEFT & to = RIGHT : 3;
+            from = LEFT & to = BOTTOM : 3;
+            from = LEFT & to = TOP : 3;
+        esac;
+        init(tcl[2]) := case
+            from = BOTTOM & to = BOTTOM : 0;
+            from = TOP & to = TOP : 0;
+            from = RIGHT & to = RIGHT : 0;
+            from = LEFT & to = LEFT : 0;
+            from = BOTTOM & to = TOP : 2;
+            from = BOTTOM & to = RIGHT : 5;
+            from = BOTTOM & to = LEFT : 2;
+            from = TOP & to = BOTTOM : 3;
+            from = TOP & to = LEFT : 5;
+            from = TOP & to = RIGHT : 3;
+            from = RIGHT & to = LEFT : 1;
+            from = RIGHT & to = TOP : 5;
+            from = RIGHT & to = BOTTOM : 1;
+            from = LEFT & to = RIGHT : 4;
+            from = LEFT & to = BOTTOM : 5;
+            from = LEFT & to = TOP : 4;
+        esac;
+        init(tcl[3]) := case
+            from = BOTTOM & to = BOTTOM : 0;
+            from = TOP & to = TOP : 0;
+            from = RIGHT & to = RIGHT : 0;
+            from = LEFT & to = LEFT : 0;
+            from = BOTTOM & to = TOP : 5;
+            from = BOTTOM & to = RIGHT : 5;
+            from = BOTTOM & to = LEFT : 1;
+            from = TOP & to = BOTTOM : 5;
+            from = TOP & to = LEFT : 5;
+            from = TOP & to = RIGHT : 4;
+            from = RIGHT & to = LEFT : 5;
+            from = RIGHT & to = TOP : 5;
+            from = RIGHT & to = BOTTOM : 3;
+            from = LEFT & to = RIGHT : 5;
+            from = LEFT & to = BOTTOM : 5;
+            from = LEFT & to = TOP : 2;
+        esac;
+        init(tcl[4]) := case
+            from = BOTTOM & to = BOTTOM : 5;
+            from = TOP & to = TOP : 5;
+            from = RIGHT & to = RIGHT : 5;
+            from = LEFT & to = LEFT : 5;
+            from = BOTTOM & to = TOP : 5;
+            from = BOTTOM & to = RIGHT : 5;
+            from = BOTTOM & to = LEFT : 5;
+            from = TOP & to = BOTTOM : 5;
+            from = TOP & to = LEFT : 5;
+            from = TOP & to = RIGHT : 5;
+            from = RIGHT & to = LEFT : 5;
+            from = RIGHT & to = TOP : 5;
+            from = RIGHT & to = BOTTOM : 5;
+            from = LEFT & to = RIGHT : 5;
+            from = LEFT & to = BOTTOM : 5;
+            from = LEFT & to = TOP : 5;
+        esac;
+
+        init(tcl_index) := 0;
+
+        init(from) := from_in;
+        init(to) := to_in;
+        init(speed) := speed_in;
+        init(progress) := 0;
+
+        next(progress) := case
+            EXITING : progress;
+            progress + speed >= max_progress : progress + speed - max_progress;
+            progress + speed < max_progress : progress + speed;
+        esac;
+
+        next(tcl_index) := case
+            tcl_index != max_tcl_index & progress + speed >= max_progress : tcl_index + 1;
+            TRUE : tcl_index;
+        esac;
+
+
+MODULE main 
+    VAR
+
+        
+        	car0 : car( BOTTOM, RIGHT, 8 );
+        	car1 : car( TOP, LEFT, 8 );
+        	car2 : car( RIGHT, BOTTOM, 4 );
+        	car3 : car( LEFT, TOP, 4 );
+        
+        intersection : intersection( car0, car1, car2, car3 );
+
+    DEFINE
+        
+            
+                car0car1_crash := (car0.CROSSING & car1.CROSSING & car0.position = car1.position );
+                car0car2_crash := (car0.CROSSING & car2.CROSSING & car0.position = car2.position );
+                car0car3_crash := (car0.CROSSING & car3.CROSSING & car0.position = car3.position );
+            
+                car1car2_crash := (car1.CROSSING & car2.CROSSING & car1.position = car2.position );
+                car1car3_crash := (car1.CROSSING & car3.CROSSING & car1.position = car3.position );
+            
+                car2car3_crash := (car2.CROSSING & car3.CROSSING & car2.position = car3.position );
+
+        
+        cars_exited := car0.EXITING& car1.EXITING& car2.EXITING& car3.EXITING;
+
+
+    LTLSPEC
+
+        F (
+        
+             
+                car0car1_crash | 
+                car0car2_crash | 
+                car0car3_crash |
+             
+                car1car2_crash | 
+                car1car3_crash |
+             
+                car2car3_crash | G !cars_exited)
+
+
+
+
+
+
+
+
+
+        
+
+

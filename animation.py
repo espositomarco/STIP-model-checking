@@ -1,6 +1,7 @@
 # from graphics import *
 
 
+
 # cars = [Circle] * 4
 # colors = [str] * 4
 # colors[0] = color_rgb(255,0,0)
@@ -27,8 +28,8 @@ def animate_log(log_filename = 'log.txt') -> str:
     # for i in positions:
     #     c = Circle(xy_position_index(0, 100), 10)
     #     win.addItem(c)
-    positions = [None] * 3
-    speeds = [None] * 3
+    positions = [None] * 4
+    speeds = [None] * 4
     positions[0] = 5
 
     output = ''
@@ -50,20 +51,20 @@ def animate_log(log_filename = 'log.txt') -> str:
                 something_changed = True
                 car, pos = line.strip().split('=')
                 name, _ = car.split('.')
-                positions[eval(name[3:]) - 1] = eval(pos)
+                positions[eval(name[3:])] = eval(pos)
             if '.speed' in line:
                 something_changed = True
                 car, speed = line.strip().split('=')
                 name, _ = car.split('.')
-                speeds[eval(name[3:]) - 1] = eval(speed)
+                speeds[eval(name[3:])] = eval(speed)
         
         if something_changed:
-            output += str(i) + ': ' + str(positions) + ' ' + str(speeds) + '\n\n'
+            output += str(i) + ': ' + str(positions) + ' ' + str(speeds) + '\n'
 
-    return output
+    return output + '\n'
 
 
 
 if __name__ == '__main__':
-    log_filename()
+    print(animate_log())
 

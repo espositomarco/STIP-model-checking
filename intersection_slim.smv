@@ -1,9 +1,9 @@
 
 
-MODULE intersection( #list(,) [i] in 0..(num_cars-1) {car[i]} )
+MODULE intersection( #list(,) [i] in 1..num_cars {car[i]} )
 
     DEFINE
-        num_cars := #{num_cars};
+        num_cars := #{num_cars}; -- emplace the value of 'num_cars' given during preprocessing step (inside define{ })
         accel := 1;
         decel := 3;
         --max_time := 40;
@@ -19,7 +19,7 @@ MODULE intersection( #list(,) [i] in 0..(num_cars-1) {car[i]} )
         --    TRUE : time - 1;
         --esac;
 
-        #for [i] in 0..(num_cars-1) {
+        #for [i] in 1..num_cars {
             next(car[i].speed) := case
                 car[i].EXITING : car[i].speed;
                 car[i].speed + accel > car[i].max_speed : {car[i].speed - decel, car[i].speed, car[i].max_speed};
@@ -27,9 +27,12 @@ MODULE intersection( #list(,) [i] in 0..(num_cars-1) {car[i]} )
                 TRUE : {car[i].speed - decel, car[i].speed, car[i].speed + accel};
             esac;
         }
-        --next(carIndex.speed) := carIndex.speed;
+        
+        --#for [i] in 1..num_cars {
+        --next(car[i].speed) := car[i].speed;
+        --}
 
----------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------
 
 MODULE car(from_in, to_in, speed_in)
 
@@ -38,8 +41,10 @@ MODULE car(from_in, to_in, speed_in)
         max_tcl_index := lanes + 2;
         max_position := (lanes * lanes) + 1;
         max_speed := #{ max_speed };
-        max_progress := 100;
+        cell_progress := 100;
+        max_progress := 450;--cell_progress * (max_tcl_index + 1) - 1;
 
+        tcl_index := progress / cell_progress;
         position := tcl[tcl_index];
 
         APPROACHING := position <= 0;
@@ -48,18 +53,18 @@ MODULE car(from_in, to_in, speed_in)
 
     FROZENVAR
         tcl : array 0..max_tcl_index of 0..max_position;
-        from : { TOP, BOTTOM, RIGHT, LEFT};
-        to : { TOP, BOTTOM, RIGHT, LEFT};
+        from : { TOP, BOTTOM, RIGHT, LEFT };
+        to : { TOP, BOTTOM, RIGHT, LEFT };
 
     VAR
-        tcl_index : 0..max_tcl_index;
+        --tcl_index : 0..max_tcl_index;
         speed : 0..max_speed;
-        progress : 0..max_progress;
+        progress : 0..(max_progress);
 
     ASSIGN
-        #{ tcl_initialization2x2 }
+        #insert_string { tcl_initialization2x2 }
 
-        init(tcl_index) := 0;
+        --init(tcl_index) := 0;
 
         init(from) := from_in;
         init(to) := to_in;
@@ -67,40 +72,42 @@ MODULE car(from_in, to_in, speed_in)
         init(progress) := 0;
 
         next(progress) := case
-            EXITING : progress;
-            progress + speed >= max_progress : progress + speed - max_progress;
-            progress + speed < max_progress : progress + speed;
-        esac;
+            --progress + speed < max_progress : progress + speed;
+            --progress + speed  max_progress : progress + speed;
+            --min(progress + speed, max_progress); 
+            progress > 400 : progress; -- & progress + speed >= max_progress : max_progress;
+            progress <= 400 : progress + speed;
+            --progress + speed > max_progress * tcl_index : max_progress * tcl_index;
+            --TRUE : 
+            --progress + speed >= max_progress : progress + speed - max_progress;
+            --progress + speed < max_progress : progress + speed;
+        --esac;
 
-        next(tcl_index) := case
-            tcl_index != max_tcl_index & progress + speed >= max_progress : tcl_index + 1;
-            TRUE : tcl_index;
+        --next(tcl_index) := case
+        --    tcl_index != max_tcl_index & progress + speed >= max_progress : tcl_index + 1;
+        --    TRUE : tcl_index;
         esac;
 
 
 MODULE main 
     VAR
-
-        #for X in 0..(num_cars-1) {
-        	carX : car( #{FROM[X]}, #{TO[X]}, #{speed[X]} );
-        }
-        --car1 : car(TOP,    BOTTOM,  #{speed[1]} );
-        --car2 : car(LEFT,  RIGHT,  #{speed[2]} );
-        --#if num_cars>=3 { car3 : car(LEFT,   RIGHT,   #{speed[3]}); }
-        --#if num_cars>=4 { car4 : car(BOTTOM, TOP,     #{speed[4]}); }
+        car1 : car(TOP,    BOTTOM,  #{speed[1]} );
+        car2 : car(LEFT,  RIGHT,  #{speed[2]} );
+        #if num_cars>=3 { car3 : car(LEFT,   RIGHT,   #{speed[3]}); }
+        #if num_cars>=4 { car4 : car(BOTTOM, TOP,     #{speed[4]}); }
         
-        intersection : intersection( #list(,) X in 0..(num_cars-1) {carX} );
+        intersection : intersection( #list(,) i in 1..num_cars {cari} );
 
     DEFINE
-        #for X in 0..(num_cars-2) {
-            #for Y in (X+1)..(num_cars-1) {
+        #for X in 1..(num_cars-1) {
+            #for Y in (X+1)..num_cars {
                 carXcarY_crash := (carX.CROSSING & carY.CROSSING & carX.position = carY.position );
             }
         }
 
         
         --cars_exited := #for Y in 1..num_cars { carY.EXITING & } TRUE;
-        cars_exited := #list(&) Y in 0..(num_cars-1) { carY.EXITING };
+        cars_exited := #list(&) Y in 1..num_cars { carY.EXITING };
         --cars_exited := car1.EXITING & car2.EXITING & car3.EXITING;        
 
 
@@ -109,8 +116,8 @@ MODULE main
         --#if num_cars == 3 { F ( car1car2_crash | car1car2_crash | car2car3_crash | G !cars_exited ) }
 
         F (
-        #for X in 0..(num_cars-2) {
-            #for Y in (X+1)..(num_cars-1) { 
+        #for X in 1..(num_cars-1) {
+            #for Y in (X+1)..num_cars { 
                 carXcarY_crash |
             }
         } G !cars_exited)
@@ -169,4 +176,5 @@ MODULE main
         --        !carXcarY_crash &
         --    }
         --} TRUE)
+
 

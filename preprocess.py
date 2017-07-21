@@ -4,8 +4,11 @@
 import sys
 import os
 import animation
+from collections import namedtuple
 from precomputed_code import tcl_initialization2x2, sqrt_init
 from typing import Iterable, List
+
+Settings = namedtuple('Settings', 'lanes max_tcl_index speed num_cars max_speed from_dir to_dir acc_param dec_param max_time cell_progress')
 
 
 def int_direction(direction: str) -> int:
@@ -97,8 +100,8 @@ def process_body_define(body: str) -> str:
 
 def process_body_list(command:str, body: str) -> str:
     list_str, varname, in_str, range_str = command.split(' ')
-    print(list_str)
-    print(list_str.split('(') )
+    # print(list_str)
+    # print(list_str.split('(') )
     _, separator = list_str.split('(')
     separator = separator[:-1]
     assert(in_str == 'in')
@@ -217,7 +220,7 @@ def planning(speeds_in: List[int], from_in: List[str], to_in: List[str], model: 
     global num_cars
     global max_speed
     global from_dir
-    global TO
+    global to_dir
     # print(speed)
     # print(num_cars)
     # print(max_speed)
@@ -226,8 +229,8 @@ def planning(speeds_in: List[int], from_in: List[str], to_in: List[str], model: 
     to_dir = to_in[:]
     num_cars = len(speeds_in)
     max_speed = 8
-    print(speed)
-    print(num_cars)
+    # print(speed)
+    # print(num_cars)
     # print(max_speed)
     processed_model = preprocess(model)
 
@@ -251,10 +254,38 @@ def planning(speeds_in: List[int], from_in: List[str], to_in: List[str], model: 
         # return ''
 
 
-def compile_NuSMV(output_name: str):
-    command = "time /Users/giacomo/dev/NuSMV-2.6.0-Darwin/bin/NuSMV "+output_name+" > log.txt"
-    print('command:', command)
+def compile_NuSMV(filename: str, logfile: str = 'log.txt'):
+    command = "time /Users/giacomo/dev/NuSMV-2.6.0-Darwin/bin/NuSMV " + filename + " > " + logfile
+    print('compiling NuSMV model:', command)
     os.system(command)
+
+
+def write_processed_model(model_name: str, settings) -> str:
+    setup_model(settings)
+    with open(model_name + '.smv', 'r') as file:
+        model = file.read()
+    model = preprocess(model)
+
+    out_model_name = model_name + '_processed.smv'
+    with open(out_model_name, 'w') as file:
+        file.write(model)
+
+    return out_model_name
+
+
+def setup_model(settings):
+    global lanes, from_dir, to_dir, max_tcl_index, speed, num_cars, max_speed, acc_param, dec_param, max_time, cell_progress
+    lanes = settings.lanes
+    from_dir = int_direction_list(settings.from_dir)
+    to_dir = int_direction_list(settings.to_dir)
+    max_tcl_index = settings.max_tcl_index
+    speed = settings.speed
+    num_cars = settings.num_cars
+    max_speed = settings.max_speed
+    acc_param = settings.acc_param
+    dec_param = settings.dec_param
+    max_time = settings.max_time
+    cell_progress = settings.cell_progress
 
 
 if __name__ == '__main__':

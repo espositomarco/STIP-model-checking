@@ -133,7 +133,13 @@ MODULE car(from_in, to_in, speed_in, id_in, acc_in, dec_in)
     next_speed_acc := max( min(speed + acc_in, max_speed), 0);
 
 
-    acc := min(decision[0], decision[1]); --TO BE GENERALIZED
+    #if num_cars == 2 {
+        acc := min(decision[0], decision[1]); --TO BE GENERALIZED
+    }
+    #if num_cars == 3 {
+        acc := min(min(decision[0], decision[1]), decision[2]); --TO BE GENERALIZED
+    }
+    
     acc_param := acc_in;
     dec_param := dec_in;
 

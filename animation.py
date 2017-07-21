@@ -1,28 +1,3 @@
-# from graphics import *
-
-
-
-# cars = [Circle] * 4
-# colors = [str] * 4
-# colors[0] = color_rgb(255,0,0)
-# colors[1] = color_rgb(255,0,0)
-# colors[2] = color_rgb(0,255,0)
-# colors[3] = color_rgb(0,0,255)
-
-
-
-# def xy_position_index(i: int, size: int) -> Point:
-#     l = size // 4
-#     if i == 1 : return Point(l, l)
-#     if i == 2 : return Point(3*l, l)
-#     if i == 3 : return Point(l, 3*l)
-#     if i == 4 : return Point(3*l, 3*l)
-#     return Point(-100, -100)
-
-
-
-
-
 def animate_string(text : str) -> str:
     positions = [None] * 4
     speeds = [None] * 4
@@ -48,7 +23,7 @@ def animate_string(text : str) -> str:
                 name, _ = car.split('.')
                 speeds[eval(name[3:])] = eval(speed)
         
-        if something_changed:
+        if something_changed or True:
             output += str(i) + ': ' + str(positions) + ' ' + str(speeds) + '\n'
 
     return output + '\n'

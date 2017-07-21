@@ -48,8 +48,8 @@ MODULE car(from_in, to_in, speed_in)
 
     FROZENVAR
         tcl : array 0..max_tcl_index of 0..max_position;
-        from : { TOP, BOTTOM, RIGHT, LEFT};
-        to : { TOP, BOTTOM, RIGHT, LEFT};
+        from : 0..3;--{ TOP, BOTTOM, RIGHT, LEFT};
+        to : 0..3;--{ TOP, BOTTOM, RIGHT, LEFT};
 
     VAR
         tcl_index : 0..max_tcl_index;
@@ -82,7 +82,7 @@ MODULE main
     VAR
 
         #for X in 0..(num_cars-1) {
-        	carX : car( #{FROM[X]}, #{TO[X]}, #{speed[X]} );
+        	carX : car( #{from_dir[X]}, #{to_dir[X]}, #{speed[X]} );
         }
         --car1 : car(TOP,    BOTTOM,  #{speed[1]} );
         --car2 : car(LEFT,  RIGHT,  #{speed[2]} );

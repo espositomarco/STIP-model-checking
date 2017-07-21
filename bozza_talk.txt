@@ -1,0 +1,15 @@
+- Presentazione mondo
+	discretizzazione tempo e spazio
+
+
+- Protocollo
+	specifiche protocollo originale
+	semplificazioni
+	esempio?
+	risultati?
+	
+
+- Planning
+	intro sul planning
+	commenti sulle spec? CTL vs LTL ( AG AF != G F ) 
+	commenti sulle performance

@@ -4,7 +4,7 @@
 # this import can be commented. It is used for 'mypy', a tool
 # for static type checking in Python.
 from typing import List, Dict
-
+import numpy as np
  
 '''
 - 2x2 intersection cells:
@@ -75,23 +75,23 @@ paths_dict2_int['[4][3]'] = [0,3,5,5,5]
 paths_dict2_int['[4][1]'] = [0,3,4,2,5]
 
 
-paths_list_int = [ None , [None] * 5 , [None] * 5 , [None] * 5 ,[None] * 5 ]
-paths_list_int[3][3] = [0,0,0,0,5]
-paths_list_int[1][1] = [0,0,0,0,5]
-paths_list_int[2][2] = [0,0,0,0,5]
-paths_list_int[4][4] = [0,0,0,0,5]
-paths_list_int[3][1] = [0,4, 2, 5,5]
-paths_list_int[3][2] = [0,4, 5, 5,5]
-paths_list_int[3][4] = [0,4,2,1,5]
-paths_list_int[1][3] =  [0,1,3,5,5]
-paths_list_int[1][4]  =   [0,1,5,5,5]
-paths_list_int[1][2]  = [0,1,3,4,5]
-paths_list_int[2][4] = [0,2,1,5,5]
-paths_list_int[2][1] = [0,2,5,5,5]
-paths_list_int[2][3] = [0,2,1,3,5]
-paths_list_int[4][2] = [0,3,4,5,5]
-paths_list_int[4][3] = [0,3,5,5,5]
-paths_list_int[4][1] = [0,3,4,2,5]
+paths_list_int = [ [None] * 4 , [None] * 4 , [None] * 4 ,[None] * 4 ]
+paths_list_int[3-1][3-1] = [0,0,0,0,5]
+paths_list_int[1-1][1-1] = [0,0,0,0,5]
+paths_list_int[2-1][2-1] = [0,0,0,0,5]
+paths_list_int[4-1][4-1] = [0,0,0,0,5]
+paths_list_int[3-1][1-1] = [0,4, 2, 5,5]
+paths_list_int[3-1][2-1] = [0,4, 5, 5,5]
+paths_list_int[3-1][4-1] = [0,4,2,1,5]
+paths_list_int[1-1][3-1] =  [0,1,3,5,5]
+paths_list_int[1-1][4-1]  =   [0,1,5,5,5]
+paths_list_int[1-1][2-1]  = [0,1,3,4,5]
+paths_list_int[2-1][4-1] = [0,2,1,5,5]
+paths_list_int[2-1][1-1] = [0,2,5,5,5]
+paths_list_int[2-1][3-1] = [0,2,1,3,5]
+paths_list_int[4-1][2-1] = [0,3,4,5,5]
+paths_list_int[4-1][3-1] = [0,3,5,5,5]
+paths_list_int[4-1][1-1] = [0,3,4,2,5]
 
 paths_dict4 = {} #type: Dict[str, List[int]]
 paths_dict4['4_BOTTOM_BOTTOM'] = [0,0,0,0,0]
@@ -152,22 +152,25 @@ def first_conflicting_index(tcl1 : List[int], tcl2 : List[int]) -> int:
 # 		print('init(conflict'+k1+k2+') := ' + str(first_conflicting_index(tcl1, tcl2)) +';')
 # 		#print('init(conflict'+k1+k2+') := ' + str(first_conflicting_index(tcl1, tcl2)) +';')
 
-res = ''
-for fro in paths_list_int:
-	if fro == None: continue
-	res += '['
-	for tcl1 in fro:
-		if tcl1 == None: continue
-		res += '['
-		for fro2 in paths_list_int:
-			if fro2 == None: continue
-			res += '['
-			for tcl2 in fro2:
-				if tcl2 == None: continue
-				res += str(first_conflicting_index(tcl1, tcl2))  + ', '
-			res += '], '
-		res += '], '
-	res += '], '
+conflict = np.ndarray(shape=(4,4,4,4), dtype=int)
+for fro in range(4):
+	for to in range(4):
+		for fro2 in range(4):
+			for to2 in range(4):
+				conflict[fro,to,fro2,to2] = first_conflicting_index(paths_list_int[fro][to],paths_list_int[fro2][to2])
+
+print( conflict.tolist() )
+
+
+	# 	for fro2 in paths_list_int:
+	# 		if fro2 == None: continue
+	# 		res += '['
+	# 		for tcl2 in fro2:
+	# 			if tcl2 == None: continue
+	# 			res += str(first_conflicting_index(tcl1, tcl2))  + ', '
+	# 		res += '], '
+	# 	res += '], '
+	# res += '], '
 				#print(first_conflicting_index(tcl1, tcl2))
 
 print(res)

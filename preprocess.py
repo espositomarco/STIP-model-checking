@@ -7,16 +7,30 @@ import animation
 from precomputed_code import tcl_initialization2x2, sqrt_init
 from typing import Iterable, List
 
+
+def int_direction(direction: str) -> int:
+    if direction == 'TOP': return 0
+    if direction == 'RIGHT': return 1
+    if direction == 'BOTTOM': return 2
+    if direction == 'LEFT': return 3
+
+
+def int_direction_list(directions: List[str]) -> List[int]:
+    return [int_direction(x) for x in directions ]
+
+
 lanes = 2
 max_tcl_index = lanes + 2
-speed = [5, 8]
+speed = [8, 4]
 num_cars = 2
 max_speed = 8
-from_dir = [3, 4] #['BOTTOM', 'LEFT'   ]
-to_dir   = [1, 3] #['TOP'   , 'BOTTOM' ]
+from_dir = int_direction_list(['RIGHT', 'BOTTOM'])
+to_dir   = int_direction_list(['BOTTOM'   , 'LEFT'])
+acc_param = 1
+dec_param = -1
+max_time = 50
+cell_progress = 30;
 
-throttle = 1
-brake = -3
 
 def my_eval(expr: str):
     try:
@@ -26,12 +40,6 @@ def my_eval(expr: str):
         exit()
         return None
 
-
-def int_direction(direction: str) -> int:
-    if direction == 'TOP': return 1
-    if direction == 'RIGHT': return 2
-    if direction == 'BOTTOM': return 3
-    if direction == 'LEFT': return 4
 
 
 def range_string(text : str) -> Iterable[int] :
@@ -250,7 +258,6 @@ def compile_NuSMV(output_name: str):
 
 
 if __name__ == '__main__':
-
 
 
     # speed[1] = 4

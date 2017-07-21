@@ -5,10 +5,10 @@ import sys
 import os
 import animation
 from collections import namedtuple
-from precomputed_code import tcl_initialization2x2, sqrt_init
+from precomputed_code import tcl_initialization2x2, tcl_initialization4x4, sqrt_init
 from typing import Iterable, List
 
-Settings = namedtuple('Settings', 'lanes max_tcl_index speed num_cars max_speed from_dir to_dir acc_param dec_param max_time cell_progress')
+Settings = namedtuple('Settings', 'lanes speed progress num_cars max_speed from_dir to_dir acc_param dec_param max_time cell_progress')
 
 
 def int_direction(direction: str) -> int:
@@ -23,8 +23,8 @@ def int_direction_list(directions: List[str]) -> List[int]:
 
 
 lanes = 2
-max_tcl_index = lanes + 2
 speed = [8, 4]
+progress = [0,0,0]
 num_cars = 2
 max_speed = 8
 from_dir = int_direction_list(['RIGHT', 'BOTTOM'])
@@ -48,6 +48,7 @@ def my_eval(expr: str):
 def range_string(text : str) -> Iterable[int] :
     start, end = text.split('..')
     return range(my_eval(start), my_eval(end)+1)
+
 
 def process_body_for(command: str, text : str) -> str :
     for_str, varname, in_str, range_str = command.split(' ')
@@ -209,6 +210,7 @@ def preprocess(text : str, args : List[str] = []) -> str :
 
     return text
 
+
 def planning(speeds_in: List[int], from_in: List[str], to_in: List[str], model: str, output_name) -> str:
     # speed[1] = speed_in[0]
     # speed[2] = speed_in[1]
@@ -274,11 +276,10 @@ def write_processed_model(model_name: str, settings) -> str:
 
 
 def setup_model(settings):
-    global lanes, from_dir, to_dir, max_tcl_index, speed, num_cars, max_speed, acc_param, dec_param, max_time, cell_progress
+    global lanes, from_dir, to_dir, max_tcl_index, speed, progress, num_cars, max_speed, acc_param, dec_param, max_time, cell_progress
     lanes = settings.lanes
     from_dir = int_direction_list(settings.from_dir)
     to_dir = int_direction_list(settings.to_dir)
-    max_tcl_index = settings.max_tcl_index
     speed = settings.speed
     num_cars = settings.num_cars
     max_speed = settings.max_speed

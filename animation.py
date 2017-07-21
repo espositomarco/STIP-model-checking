@@ -1,9 +1,9 @@
-def animate_string(text : str) -> str:
-    positions = [None] * 4
-    speeds = [None] * 4
-    positions[0] = 5
+def animate_string(text : str, settings) -> str:
+    positions = [None] * settings.num_cars
+    speeds = [None] * settings.num_cars
+    # positions[0] = 5
 
-    output = ''
+    output = str(settings) + '\n'
     states = text.split('State:')
     states = states[1:]
     for i,state in enumerate(states):
@@ -29,7 +29,7 @@ def animate_string(text : str) -> str:
     return output + '\n'
 
 
-def animate_logfile(log_filename = 'log.txt') -> str:
+def animate_logfile(log_filename, settings) -> str:
     # size = 100
     # win = GraphWin("My Circle", size, size, autoflush=False)
     # for i in positions:
@@ -39,7 +39,9 @@ def animate_logfile(log_filename = 'log.txt') -> str:
     with open(log_filename) as log:
         text = log.read()
 
-    return animate_string(text)
+    return animate_string(text, settings)
+
+
 
 if __name__ == '__main__':
     print(animate_logfile())

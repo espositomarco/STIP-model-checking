@@ -15,9 +15,9 @@ MODULE main
 
 
     VAR
-    #for [i] in 0..num_cars-1 {
-        car[i] : car( #{from_dir[[i]]}, #{to_dir[[i]]}, #{speed[[i]]}, [i], #{acc_param}, #{dec_param} );
-    }
+        #for [i] in 0..num_cars-1 {
+            car[i] : car( #{from_dir[[i]]}, #{to_dir[[i]]}, #{speed[[i]]}, [i], #{acc_param}, #{dec_param} );
+        }
 
     
 
@@ -116,7 +116,7 @@ MODULE car(from_in, to_in, speed_in, id_in, acc_in, dec_in)
     DEFINE
 
     lanes := #{lanes};
-    max_tcl_index := #{max_tcl_index}; --lanes + 2;
+    max_tcl_index := lanes + 2;
     max_position := (lanes * lanes) + 1;
     max_speed := #{ max_speed };
 
@@ -139,7 +139,7 @@ MODULE car(from_in, to_in, speed_in, id_in, acc_in, dec_in)
     #if num_cars == 3 {
         acc := min(min(decision[0], decision[1]), decision[2]); --TO BE GENERALIZED
     }
-    
+
     acc_param := acc_in;
     dec_param := dec_in;
 

@@ -94,22 +94,22 @@ paths_list_int[4-1][3-1] = [0,3,5,5,5]
 paths_list_int[4-1][1-1] = [0,3,4,2,5]
 
 paths_dict4 = {} #type: Dict[str, List[int]]
-paths_dict4['4_BOTTOM_BOTTOM'] = [0,0,0,0,0]
-paths_dict4['4_TOP_TOP'] =       [0,0,0,0,0]
-paths_dict4['4_RIGHT_RIGHT'] =   [0,0,0,0,0]
-paths_dict4['4_LEFT_LEFT'] =     [0,0,0,0,0]
-paths_dict4['4_BOTTOM_TOP'] =    [16,12,8,4,0]
-paths_dict4['4_BOTTOM_RIGHT'] =  [16,0,0,0,0]
-paths_dict4['4_BOTTOM_LEFT'] =   [15,11,7,6,5]
-paths_dict4['4_TOP_BOTTOM'] =    [1,5,9,13,0]
-paths_dict4['4_TOP_LEFT']  =     [1,0,0,0,0]
-paths_dict4['4_TOP_RIGHT']  =    [2,6,10,11,12]
-paths_dict4['4_RIGHT_LEFT'] =    [4,3,2,1,0]
-paths_dict4['4_RIGHT_TOP'] =     [4,0,0,0,0]
-paths_dict4['4_RIGHT_BOTTOM'] =  [8,7,6,10,14]
-paths_dict4['4_LEFT_RIGHT'] =    [13,14,15,16,0]
-paths_dict4['4_LEFT_BOTTOM'] =   [13,0,0,0,0]
-paths_dict4['4_LEFT_TOP'] =      [9,19,11,7,3]
+paths_dict4['4_2_2'] = [0,0,0,0,0,0,17]
+paths_dict4['4_0_0'] = [0,0,0,0,0,0,17]
+paths_dict4['4_1_1'] = [0,0,0,0,0,0,17]
+paths_dict4['4_3_3'] = [0,0,0,0,0,0,17]
+paths_dict4['4_2_0'] = [0,16,12,8,4,17,17]
+paths_dict4['4_2_1'] = [0,16,17,17,17,17,17]
+paths_dict4['4_2_3'] = [0,15,11,7,6,5,17]
+paths_dict4['4_0_2'] = [0,1,5,9,13,17,17]
+paths_dict4['4_0_3'] = [0,1,17,17,17,17,17]
+paths_dict4['4_0_1'] = [0,2,6,10,11,12,17]
+paths_dict4['4_1_3'] = [0,4,3,2,1,17,17]
+paths_dict4['4_1_0'] = [0,4,17,17,17,17,17]
+paths_dict4['4_1_2'] = [0,8,7,6,10,14,17]
+paths_dict4['4_3_1'] = [0,13,14,15,16,17,17]
+paths_dict4['4_3_2'] = [0,13,0,0,0,0,17]
+paths_dict4['4_3_0'] = [0,9,19,11,7,3,17]
 
 def print_tcl_initialization_2x2():
     for i in range(0,5):
@@ -122,7 +122,7 @@ def print_tcl_initialization_2x2():
 
 
 def print_tcl_initialization_4x4():
-    for i in range(0,5):
+    for i in range(0,len(paths_dict4['4_2_2'])):
         init = 'init(tcl['+str(i)+']) := case'
         print(init)
         for name,path in paths_dict4.items():
@@ -130,6 +130,8 @@ def print_tcl_initialization_4x4():
             print('\tfrom = '+from_symbol+' & '+'to = '+ to_symbol+' : '+str(path[i])+';')
         print('esac;')
 
+print_tcl_initialization_4x4()
+exit()
 
 def first_conflicting_index(tcl1 : List[int], tcl2 : List[int]) -> int:
 	for i in range(1, len(tcl1)):

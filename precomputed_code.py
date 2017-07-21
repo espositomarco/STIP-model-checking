@@ -53,24 +53,105 @@ tcl_initialization2x2 = '''init(tcl[0]) := 0;
             from = 3 & to = 2 : 5;
             from = 3 & to = 0 : 2;
         esac;
-        init(tcl[4]) := case
-            from = 2 & to = 2 : 5;
-            from = 0 & to = 0 : 5;
-            from = 1 & to = 1 : 5;
-            from = 3 & to = 3 : 5;
-            from = 2 & to = 0 : 5;
-            from = 2 & to = 1 : 5;
-            from = 2 & to = 3 : 5;
+        init(tcl[4]) := 5;
+    '''
+
+
+tcl_initialization4x4 = '''
+        init(tcl[0]) := 0;
+        init(tcl[1]) := case
+            from = 2 & to = 2 : 0;
+            from = 0 & to = 0 : 0;
+            from = 1 & to = 1 : 0;
+            from = 3 & to = 3 : 0;
+            from = 2 & to = 0 : 16;
+            from = 2 & to = 1 : 16;
+            from = 2 & to = 3 : 15;
+            from = 0 & to = 2 : 1;
+            from = 0 & to = 3 : 1;
+            from = 0 & to = 1 : 2;
+            from = 1 & to = 3 : 4;
+            from = 1 & to = 0 : 4;
+            from = 1 & to = 2 : 8;
+            from = 3 & to = 1 : 13;
+            from = 3 & to = 2 : 13;
+            from = 3 & to = 0 : 9;
+        esac;
+        init(tcl[2]) := case
+            from = 2 & to = 2 : 0;
+            from = 0 & to = 0 : 0;
+            from = 1 & to = 1 : 0;
+            from = 3 & to = 3 : 0;
+            from = 2 & to = 0 : 12;
+            from = 2 & to = 1 : 17;
+            from = 2 & to = 3 : 11;
             from = 0 & to = 2 : 5;
-            from = 0 & to = 3 : 5;
-            from = 0 & to = 1 : 5;
-            from = 1 & to = 3 : 5;
-            from = 1 & to = 0 : 5;
-            from = 1 & to = 2 : 5;
-            from = 3 & to = 1 : 5;
-            from = 3 & to = 2 : 5;
-            from = 3 & to = 0 : 5;
-        esac;'''
+            from = 0 & to = 3 : 17;
+            from = 0 & to = 1 : 6;
+            from = 1 & to = 3 : 3;
+            from = 1 & to = 0 : 17;
+            from = 1 & to = 2 : 7;
+            from = 3 & to = 1 : 14;
+            from = 3 & to = 2 : 0;
+            from = 3 & to = 0 : 19;
+        esac;
+        init(tcl[3]) := case
+            from = 2 & to = 2 : 0;
+            from = 0 & to = 0 : 0;
+            from = 1 & to = 1 : 0;
+            from = 3 & to = 3 : 0;
+            from = 2 & to = 0 : 8;
+            from = 2 & to = 1 : 17;
+            from = 2 & to = 3 : 7;
+            from = 0 & to = 2 : 9;
+            from = 0 & to = 3 : 17;
+            from = 0 & to = 1 : 10;
+            from = 1 & to = 3 : 2;
+            from = 1 & to = 0 : 17;
+            from = 1 & to = 2 : 6;
+            from = 3 & to = 1 : 15;
+            from = 3 & to = 2 : 0;
+            from = 3 & to = 0 : 11;
+        esac;
+        init(tcl[4]) := case
+            from = 2 & to = 2 : 0;
+            from = 0 & to = 0 : 0;
+            from = 1 & to = 1 : 0;
+            from = 3 & to = 3 : 0;
+            from = 2 & to = 0 : 4;
+            from = 2 & to = 1 : 17;
+            from = 2 & to = 3 : 6;
+            from = 0 & to = 2 : 13;
+            from = 0 & to = 3 : 17;
+            from = 0 & to = 1 : 11;
+            from = 1 & to = 3 : 1;
+            from = 1 & to = 0 : 17;
+            from = 1 & to = 2 : 10;
+            from = 3 & to = 1 : 16;
+            from = 3 & to = 2 : 0;
+            from = 3 & to = 0 : 7;
+        esac;
+        init(tcl[5]) := case
+            from = 2 & to = 2 : 0;
+            from = 0 & to = 0 : 0;
+            from = 1 & to = 1 : 0;
+            from = 3 & to = 3 : 0;
+            from = 2 & to = 0 : 17;
+            from = 2 & to = 1 : 17;
+            from = 2 & to = 3 : 5;
+            from = 0 & to = 2 : 17;
+            from = 0 & to = 3 : 17;
+            from = 0 & to = 1 : 12;
+            from = 1 & to = 3 : 17;
+            from = 1 & to = 0 : 17;
+            from = 1 & to = 2 : 14;
+            from = 3 & to = 1 : 17;
+            from = 3 & to = 2 : 0;
+            from = 3 & to = 0 : 3;
+        esac;
+        init(tcl[6]) := 17;
+        '''
+
 
 conflict_init = '''
         init(conflict[3][3][3][3]) := 1;

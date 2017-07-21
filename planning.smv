@@ -1,24 +1,28 @@
 
 
-MODULE intersection( #list(,) [i] in 0..(num_cars-1) {car[i]} )
+MODULE main
 
     DEFINE
         num_cars := #{num_cars};
         accel := #{acc_param};
         decel := #{acc_param};
-        --max_time := 40;
-    FROZENVAR
+    
+        #for X in 0..(num_cars-2) {
+            #for Y in (X+1)..(num_cars-1) {
+                carXcarY_crash := (carX.CROSSING & carY.CROSSING & carX.position = carY.position );
+            }
+        }
+
+        cars_exited := #list(&) Y in 0..(num_cars-1) { carY.EXITING };
+
 
     VAR
-        --time : 0..max_time;
+    	#for X in 0..(num_cars-1) {
+        	carX : car( #{from_dir[X]}, #{to_dir[X]}, #{speed[X]}, #{progress[X]} );
+		}
+
 
     ASSIGN
-        --init(time) := max_time;
-        --next(time) := case
-        --    time = 0 : 0;
-        --    TRUE : time - 1;
-        --esac;
-
         #for [i] in 0..(num_cars-1) {
             next(car[i].speed) := case
                 car[i].EXITING : car[i].speed;
@@ -27,11 +31,19 @@ MODULE intersection( #list(,) [i] in 0..(num_cars-1) {car[i]} )
                 TRUE : {car[i].speed - decel, car[i].speed, car[i].speed + accel};
             esac;
         }
-        --next(carIndex.speed) := carIndex.speed;
 
----------------------------------------------------------------------------------------------------------------
 
-MODULE car(from_in, to_in, speed_in)
+    LTLSPEC
+        F (
+        #for X in 0..(num_cars-2) {
+            #for Y in (X+1)..(num_cars-1) { 
+                carXcarY_crash |
+            }
+        } G !cars_exited)
+
+
+
+MODULE car(from_in, to_in, speed_in, progress_in)
 
     DEFINE
         lanes := #{lanes};
@@ -48,8 +60,8 @@ MODULE car(from_in, to_in, speed_in)
 
     FROZENVAR
         tcl : array 0..max_tcl_index of 0..max_position;
-        from : 0..3;--{ TOP, BOTTOM, RIGHT, LEFT};
-        to : 0..3;--{ TOP, BOTTOM, RIGHT, LEFT};
+        from : 0..3;
+        to : 0..3;
 
     VAR
         tcl_index : 0..max_tcl_index;
@@ -57,14 +69,20 @@ MODULE car(from_in, to_in, speed_in)
         progress : 0..max_progress;
 
     ASSIGN
-        #{ tcl_initialization2x2 }
+        #if lanes == 2 {
+			#{tcl_initialization2x2}
+        }
+
+        #if lanes == 4 {
+			#{tcl_initialization4x4}
+        }
 
         init(tcl_index) := 0;
 
         init(from) := from_in;
         init(to) := to_in;
         init(speed) := speed_in;
-        init(progress) := 0;
+        init(progress) := progress_in;
 
         next(progress) := case
             EXITING : progress;
@@ -78,42 +96,6 @@ MODULE car(from_in, to_in, speed_in)
         esac;
 
 
-MODULE main 
-    VAR
-
-        #for X in 0..(num_cars-1) {
-        	carX : car( #{from_dir[X]}, #{to_dir[X]}, #{speed[X]} );
-        }
-        --car1 : car(TOP,    BOTTOM,  #{speed[1]} );
-        --car2 : car(LEFT,  RIGHT,  #{speed[2]} );
-        --#if num_cars>=3 { car3 : car(LEFT,   RIGHT,   #{speed[3]}); }
-        --#if num_cars>=4 { car4 : car(BOTTOM, TOP,     #{speed[4]}); }
-        
-        intersection : intersection( #list(,) X in 0..(num_cars-1) {carX} );
-
-    DEFINE
-        #for X in 0..(num_cars-2) {
-            #for Y in (X+1)..(num_cars-1) {
-                carXcarY_crash := (carX.CROSSING & carY.CROSSING & carX.position = carY.position );
-            }
-        }
-
-        
-        --cars_exited := #for Y in 1..num_cars { carY.EXITING & } TRUE;
-        cars_exited := #list(&) Y in 0..(num_cars-1) { carY.EXITING };
-        --cars_exited := car1.EXITING & car2.EXITING & car3.EXITING;        
-
-
-    LTLSPEC
-        --#if num_cars == 2 { F ( car1car2_crash | G !cars_exited ) }
-        --#if num_cars == 3 { F ( car1car2_crash | car1car2_crash | car2car3_crash | G !cars_exited ) }
-
-        F (
-        #for X in 0..(num_cars-2) {
-            #for Y in (X+1)..(num_cars-1) { 
-                carXcarY_crash |
-            }
-        } G !cars_exited)
 
         --#list(|) [i] in 1..num_cars-1 {
         --        car[i]car[j]_crash

@@ -29,12 +29,39 @@ Its job is to adjust the car motion in order to guarantee safety.
 These are the values represented in our model, which tries to represent reality as much as possible.
 
 Discretization
-In our model 
+In our model ..
 
-How is a vehicle modeled ?
-Holds information about its motion and position :
-acceleration
-speed
-position
-desired trajectory (Trajectory Cell List)
-It is a passive element. It can evolve, but it’s blind to other elements’ behaviour.
+The motion of a car inside the single cell is represented by an integer value, that we called progress. The progress of a car increase every step by its speed, when it reaches the threshold value, the vehicles goes to the next cell of its trajectory
+
+The evolution of the entire system is of course represented in a sequence of finite time steps. Every time step .... of actual time. This is .. since in the reference paper the assumption in that vehicle communication happens times every second o 0.1 s
+
+As a consequence of this settings, we have that position, speed and acceleration can only take integer values, bounded by a maximum and a minimum
+Hence the number of possible states is finite
+
+This is the analytic expression of the vehicle motion in the general case in which it is accelerating o decelerating at constant rate.
+Obviously, it's a quadratic relation of the time ..., but it becomes a constant speed motion when the maximum speed is reached.
+This equation will be needed later for the protocol implementation.
+But before that, let's talk about the planning approach
+
+The first question we need to ask is:
+'Given our discretized model, is still possible for every configuration to let vehicle cross safely?'
+'Can we satisfy the safties and liveness of the paper? Or we lost something in the modeling?'
+
+We can answer this questions by first modeling the world, but without specifying the protocol. So the intersection has no rules to follow, it can change vehicles' speeds in any way.
+The model checker will find a correct evolution for us
+
+Let's see how it can be done.
+This is what we want to find out:
+From all possible ..., there exists a path such that
+- no collisions between vehicles
+- eventually every vehicles leaves the intersection
+- 
+
+
+
+
+
+
+
+DA MODIFICARE
+- v max = 40 kmh e celle da 6m

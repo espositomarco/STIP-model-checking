@@ -1,12 +1,14 @@
 --inizio
 
+
+
 MODULE main
     DEFINE
         num_cars := #{num_cars};
         --throttle#{} := 1;
         --brake := -3;
         --conflict := [ [ [1,1,1,1] , [1,1,1,1] ] , [  ] ]
-        THETA := 1;
+        THETA := -1;
         conflict := [[[[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], [[0, 1, 1, 1], [0, 0, 1, 1], [3, 3, 0, 1], [2, 2, 2, 0]], [[0, 1, 1, 1], [0, 0, 1, 1], [0, 0, 0, 1], [2, 2, 2, 0]], [[0, 1, 1, 1], [0, 0, 1, 1], [0, 0, 0, 1], [0, 0, 0, 0]]], [[[0, 0, 0, 0], [1, 0, 1, 1], [1, 0, 0, 1], [1, 0, 0, 0]], [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], [[0, 2, 2, 2], [1, 0, 1, 1], [1, 0, 0, 1], [1, 3, 3, 0]], [[0, 2, 2, 2], [1, 0, 1, 1], [1, 0, 0, 1], [1, 0, 0, 0]]], [[[0, 1, 0, 0], [2, 0, 2, 2], [1, 1, 0, 1], [1, 1, 0, 0]], [[0, 1, 0, 0], [0, 0, 0, 0], [1, 1, 0, 1], [1, 1, 0, 0]], [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], [[0, 1, 3, 3], [2, 0, 2, 2], [1, 1, 0, 1], [1, 1, 0, 0]]], [[[0, 1, 1, 0], [3, 0, 1, 3], [2, 2, 0, 2], [1, 1, 1, 0]], [[0, 1, 1, 0], [0, 0, 1, 0], [2, 2, 0, 2], [1, 1, 1, 0]], [[0, 1, 1, 0], [0, 0, 1, 0], [0, 0, 0, 0], [1, 1, 1, 0]], [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]]];
 
 
@@ -28,7 +30,8 @@ MODULE main
         #for [j] in 0..num_cars-1 {
             #if [j]!=[i] {
                 next(car[i].decision[[j]]) := case
-                    car[i].priority < car[j].priority & 
+                    ((car[i].priority < car[j].priority) | 
+                    (car[i].priority = car[j].priority & car[i].id > car[j].id)) & 
                     !car[j].EXITING &
                     conflict[car[i].from][car[i].to][car[j].from][car[j].to] > car[i].tcl_index &
                     (
@@ -37,8 +40,14 @@ MODULE main
                             (
                             conflict[car[i].from][car[i].to][car[j].from][car[j].to] = CELLi &
                             conflict[car[j].from][car[j].to][car[i].from][car[i].to] = CELLj &
-                            (car[i].timeAt_#{CELLi+1} + THETA > car[j].timeAt_CELLj & 
-                            car[i].accelTimeAt_CELLi < car[j].timeAt_#{CELLj+1} + THETA)
+                            --(car[i].timeAt_#{CELLi+1} + THETA > car[j].timeAt_CELLj) & 
+                            --car[i].accelTimeAt_CELLi -THETA < car[j].timeAt_#{CELLj+1} -- i entra prima che j esca 
+                            (
+                            (car[i].accelTimeAt_CELLi - THETA > car[j].timeAt_CELLj & car[i].accelTimeAt_CELLi + THETA < car[j].timeAt_#{CELLj+1}) 
+                            |
+                            (car[j].timeAt_CELLj - THETA > car[i].accelTimeAt_CELLi & car[j].timeAt_CELLj + THETA < car[i].accelTimeAt_#{CELLi+1})
+                            -- i entra prima che j esca 
+                            )
                             ) |
                         }
                     } FALSE
@@ -100,10 +109,43 @@ MODULE main
         cars_exited := #list(&) Y in 0..(num_cars-1) { carY.EXITING };
 
 
-    --LTLSPEC
-        --G !car0car1_crash
-    CTLSPEC
-        AF car0car1_crash
+
+    LTLSPEC
+        -- safety: no crashes
+        ! (
+        G
+        #for [i] in 0..num_cars-2 {
+            #for [j] in [i]+1..num_cars-1 {
+                !car[i]car[j]_crash &
+                } TRUE
+        }
+
+        &
+        
+        -- liveness: cars eventually exits
+        F cars_exited
+
+        &
+
+        -- safety: not every car stops
+        G
+        #for [i] in 0..num_cars-1 {
+            car[i].speed != 0 |
+        } FALSE
+        
+        &
+
+        -- safety: non tutte decelerano
+        G
+        #for [i] in 0..num_cars-1 {
+            car[i].acc >= 0 |
+        } FALSE
+
+        )
+
+
+
+
     --F (
     --#for [i] in 0..(num_cars-2) {
     --    #for [j] in ([i]+1)..(num_cars-1) { 

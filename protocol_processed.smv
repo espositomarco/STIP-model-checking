@@ -1,18 +1,19 @@
 
+
+
 MODULE main
     DEFINE
-        num_cars := 3;
-        THETA := 1;
+        num_cars := 2;
+        THETA := -1;
         conflict := [[[[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], [[0, 1, 1, 1], [0, 0, 1, 1], [3, 3, 0, 1], [2, 2, 2, 0]], [[0, 1, 1, 1], [0, 0, 1, 1], [0, 0, 0, 1], [2, 2, 2, 0]], [[0, 1, 1, 1], [0, 0, 1, 1], [0, 0, 0, 1], [0, 0, 0, 0]]], [[[0, 0, 0, 0], [1, 0, 1, 1], [1, 0, 0, 1], [1, 0, 0, 0]], [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], [[0, 2, 2, 2], [1, 0, 1, 1], [1, 0, 0, 1], [1, 3, 3, 0]], [[0, 2, 2, 2], [1, 0, 1, 1], [1, 0, 0, 1], [1, 0, 0, 0]]], [[[0, 1, 0, 0], [2, 0, 2, 2], [1, 1, 0, 1], [1, 1, 0, 0]], [[0, 1, 0, 0], [0, 0, 0, 0], [1, 1, 0, 1], [1, 1, 0, 0]], [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], [[0, 1, 3, 3], [2, 0, 2, 2], [1, 1, 0, 1], [1, 1, 0, 0]]], [[[0, 1, 1, 0], [3, 0, 1, 3], [2, 2, 0, 2], [1, 1, 1, 0]], [[0, 1, 1, 0], [0, 0, 1, 0], [2, 2, 0, 2], [1, 1, 1, 0]], [[0, 1, 1, 0], [0, 0, 1, 0], [0, 0, 0, 0], [1, 1, 1, 0]], [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]]];
 
 
 
 
     VAR
-    
-        car0 : car( 1, 2, 8, 0, 1, -1 );
-        car1 : car( 2, 3, 4, 1, 1, -1 );
-        car2 : car( 0, 2, 7, 2, 1, -1 );
+        
+            car0 : car( 1, 2, 5, 0, 1, -1 );
+            car1 : car( 2, 3, 6, 1, 1, -1 );
 
     
 
@@ -24,7 +25,8 @@ MODULE main
             
             
                 next(car0.decision[1]) := case
-                    car0.priority < car1.priority & 
+                    ((car0.priority < car1.priority) | 
+                    (car0.priority = car1.priority & car0.id > car1.id)) & 
                     !car1.EXITING &
                     conflict[car0.from][car0.to][car1.from][car1.to] > car0.tcl_index &
                     (
@@ -33,213 +35,149 @@ MODULE main
                             (
                             conflict[car0.from][car0.to][car1.from][car1.to] = 1 &
                             conflict[car1.from][car1.to][car0.from][car0.to] = 1 &
-                            (car0.timeAt_2 + THETA > car1.timeAt_1 & 
-                            car0.accelTimeAt_1 < car1.timeAt_2 + THETA)
+                            (
+                            (car0.accelTimeAt_1 - THETA > car1.timeAt_1 & car0.accelTimeAt_1 + THETA < car1.timeAt_2) 
+                            |
+                            (car1.timeAt_1 - THETA > car0.accelTimeAt_1 & car1.timeAt_1 + THETA < car0.accelTimeAt_2)
+                            )
                             ) |
                             (
                             conflict[car0.from][car0.to][car1.from][car1.to] = 1 &
                             conflict[car1.from][car1.to][car0.from][car0.to] = 2 &
-                            (car0.timeAt_2 + THETA > car1.timeAt_2 & 
-                            car0.accelTimeAt_1 < car1.timeAt_3 + THETA)
+                            (
+                            (car0.accelTimeAt_1 - THETA > car1.timeAt_2 & car0.accelTimeAt_1 + THETA < car1.timeAt_3) 
+                            |
+                            (car1.timeAt_2 - THETA > car0.accelTimeAt_1 & car1.timeAt_2 + THETA < car0.accelTimeAt_2)
+                            )
                             ) |
                             (
                             conflict[car0.from][car0.to][car1.from][car1.to] = 1 &
                             conflict[car1.from][car1.to][car0.from][car0.to] = 3 &
-                            (car0.timeAt_2 + THETA > car1.timeAt_3 & 
-                            car0.accelTimeAt_1 < car1.timeAt_4 + THETA)
+                            (
+                            (car0.accelTimeAt_1 - THETA > car1.timeAt_3 & car0.accelTimeAt_1 + THETA < car1.timeAt_4) 
+                            |
+                            (car1.timeAt_3 - THETA > car0.accelTimeAt_1 & car1.timeAt_3 + THETA < car0.accelTimeAt_2)
+                            )
                             ) |
                             (
                             conflict[car0.from][car0.to][car1.from][car1.to] = 1 &
                             conflict[car1.from][car1.to][car0.from][car0.to] = 4 &
-                            (car0.timeAt_2 + THETA > car1.timeAt_4 & 
-                            car0.accelTimeAt_1 < car1.timeAt_5 + THETA)
+                            (
+                            (car0.accelTimeAt_1 - THETA > car1.timeAt_4 & car0.accelTimeAt_1 + THETA < car1.timeAt_5) 
+                            |
+                            (car1.timeAt_4 - THETA > car0.accelTimeAt_1 & car1.timeAt_4 + THETA < car0.accelTimeAt_2)
+                            )
                             ) |
                         
                             (
                             conflict[car0.from][car0.to][car1.from][car1.to] = 2 &
                             conflict[car1.from][car1.to][car0.from][car0.to] = 1 &
-                            (car0.timeAt_3 + THETA > car1.timeAt_1 & 
-                            car0.accelTimeAt_2 < car1.timeAt_2 + THETA)
+                            (
+                            (car0.accelTimeAt_2 - THETA > car1.timeAt_1 & car0.accelTimeAt_2 + THETA < car1.timeAt_2) 
+                            |
+                            (car1.timeAt_1 - THETA > car0.accelTimeAt_2 & car1.timeAt_1 + THETA < car0.accelTimeAt_3)
+                            )
                             ) |
                             (
                             conflict[car0.from][car0.to][car1.from][car1.to] = 2 &
                             conflict[car1.from][car1.to][car0.from][car0.to] = 2 &
-                            (car0.timeAt_3 + THETA > car1.timeAt_2 & 
-                            car0.accelTimeAt_2 < car1.timeAt_3 + THETA)
+                            (
+                            (car0.accelTimeAt_2 - THETA > car1.timeAt_2 & car0.accelTimeAt_2 + THETA < car1.timeAt_3) 
+                            |
+                            (car1.timeAt_2 - THETA > car0.accelTimeAt_2 & car1.timeAt_2 + THETA < car0.accelTimeAt_3)
+                            )
                             ) |
                             (
                             conflict[car0.from][car0.to][car1.from][car1.to] = 2 &
                             conflict[car1.from][car1.to][car0.from][car0.to] = 3 &
-                            (car0.timeAt_3 + THETA > car1.timeAt_3 & 
-                            car0.accelTimeAt_2 < car1.timeAt_4 + THETA)
+                            (
+                            (car0.accelTimeAt_2 - THETA > car1.timeAt_3 & car0.accelTimeAt_2 + THETA < car1.timeAt_4) 
+                            |
+                            (car1.timeAt_3 - THETA > car0.accelTimeAt_2 & car1.timeAt_3 + THETA < car0.accelTimeAt_3)
+                            )
                             ) |
                             (
                             conflict[car0.from][car0.to][car1.from][car1.to] = 2 &
                             conflict[car1.from][car1.to][car0.from][car0.to] = 4 &
-                            (car0.timeAt_3 + THETA > car1.timeAt_4 & 
-                            car0.accelTimeAt_2 < car1.timeAt_5 + THETA)
+                            (
+                            (car0.accelTimeAt_2 - THETA > car1.timeAt_4 & car0.accelTimeAt_2 + THETA < car1.timeAt_5) 
+                            |
+                            (car1.timeAt_4 - THETA > car0.accelTimeAt_2 & car1.timeAt_4 + THETA < car0.accelTimeAt_3)
+                            )
                             ) |
                         
                             (
                             conflict[car0.from][car0.to][car1.from][car1.to] = 3 &
                             conflict[car1.from][car1.to][car0.from][car0.to] = 1 &
-                            (car0.timeAt_4 + THETA > car1.timeAt_1 & 
-                            car0.accelTimeAt_3 < car1.timeAt_2 + THETA)
+                            (
+                            (car0.accelTimeAt_3 - THETA > car1.timeAt_1 & car0.accelTimeAt_3 + THETA < car1.timeAt_2) 
+                            |
+                            (car1.timeAt_1 - THETA > car0.accelTimeAt_3 & car1.timeAt_1 + THETA < car0.accelTimeAt_4)
+                            )
                             ) |
                             (
                             conflict[car0.from][car0.to][car1.from][car1.to] = 3 &
                             conflict[car1.from][car1.to][car0.from][car0.to] = 2 &
-                            (car0.timeAt_4 + THETA > car1.timeAt_2 & 
-                            car0.accelTimeAt_3 < car1.timeAt_3 + THETA)
+                            (
+                            (car0.accelTimeAt_3 - THETA > car1.timeAt_2 & car0.accelTimeAt_3 + THETA < car1.timeAt_3) 
+                            |
+                            (car1.timeAt_2 - THETA > car0.accelTimeAt_3 & car1.timeAt_2 + THETA < car0.accelTimeAt_4)
+                            )
                             ) |
                             (
                             conflict[car0.from][car0.to][car1.from][car1.to] = 3 &
                             conflict[car1.from][car1.to][car0.from][car0.to] = 3 &
-                            (car0.timeAt_4 + THETA > car1.timeAt_3 & 
-                            car0.accelTimeAt_3 < car1.timeAt_4 + THETA)
+                            (
+                            (car0.accelTimeAt_3 - THETA > car1.timeAt_3 & car0.accelTimeAt_3 + THETA < car1.timeAt_4) 
+                            |
+                            (car1.timeAt_3 - THETA > car0.accelTimeAt_3 & car1.timeAt_3 + THETA < car0.accelTimeAt_4)
+                            )
                             ) |
                             (
                             conflict[car0.from][car0.to][car1.from][car1.to] = 3 &
                             conflict[car1.from][car1.to][car0.from][car0.to] = 4 &
-                            (car0.timeAt_4 + THETA > car1.timeAt_4 & 
-                            car0.accelTimeAt_3 < car1.timeAt_5 + THETA)
+                            (
+                            (car0.accelTimeAt_3 - THETA > car1.timeAt_4 & car0.accelTimeAt_3 + THETA < car1.timeAt_5) 
+                            |
+                            (car1.timeAt_4 - THETA > car0.accelTimeAt_3 & car1.timeAt_4 + THETA < car0.accelTimeAt_4)
+                            )
                             ) |
                         
                             (
                             conflict[car0.from][car0.to][car1.from][car1.to] = 4 &
                             conflict[car1.from][car1.to][car0.from][car0.to] = 1 &
-                            (car0.timeAt_5 + THETA > car1.timeAt_1 & 
-                            car0.accelTimeAt_4 < car1.timeAt_2 + THETA)
+                            (
+                            (car0.accelTimeAt_4 - THETA > car1.timeAt_1 & car0.accelTimeAt_4 + THETA < car1.timeAt_2) 
+                            |
+                            (car1.timeAt_1 - THETA > car0.accelTimeAt_4 & car1.timeAt_1 + THETA < car0.accelTimeAt_5)
+                            )
                             ) |
                             (
                             conflict[car0.from][car0.to][car1.from][car1.to] = 4 &
                             conflict[car1.from][car1.to][car0.from][car0.to] = 2 &
-                            (car0.timeAt_5 + THETA > car1.timeAt_2 & 
-                            car0.accelTimeAt_4 < car1.timeAt_3 + THETA)
+                            (
+                            (car0.accelTimeAt_4 - THETA > car1.timeAt_2 & car0.accelTimeAt_4 + THETA < car1.timeAt_3) 
+                            |
+                            (car1.timeAt_2 - THETA > car0.accelTimeAt_4 & car1.timeAt_2 + THETA < car0.accelTimeAt_5)
+                            )
                             ) |
                             (
                             conflict[car0.from][car0.to][car1.from][car1.to] = 4 &
                             conflict[car1.from][car1.to][car0.from][car0.to] = 3 &
-                            (car0.timeAt_5 + THETA > car1.timeAt_3 & 
-                            car0.accelTimeAt_4 < car1.timeAt_4 + THETA)
+                            (
+                            (car0.accelTimeAt_4 - THETA > car1.timeAt_3 & car0.accelTimeAt_4 + THETA < car1.timeAt_4) 
+                            |
+                            (car1.timeAt_3 - THETA > car0.accelTimeAt_4 & car1.timeAt_3 + THETA < car0.accelTimeAt_5)
+                            )
                             ) |
                             (
                             conflict[car0.from][car0.to][car1.from][car1.to] = 4 &
                             conflict[car1.from][car1.to][car0.from][car0.to] = 4 &
-                            (car0.timeAt_5 + THETA > car1.timeAt_4 & 
-                            car0.accelTimeAt_4 < car1.timeAt_5 + THETA)
-                            ) | FALSE
-                    ) 
-                    : car0.dec_param;
-
-                    TRUE : car0.acc_param;
-                esac;
-            
-                next(car0.decision[2]) := case
-                    car0.priority < car2.priority & 
-                    !car2.EXITING &
-                    conflict[car0.from][car0.to][car2.from][car2.to] > car0.tcl_index &
-                    (
-                    
-                        
                             (
-                            conflict[car0.from][car0.to][car2.from][car2.to] = 1 &
-                            conflict[car2.from][car2.to][car0.from][car0.to] = 1 &
-                            (car0.timeAt_2 + THETA > car2.timeAt_1 & 
-                            car0.accelTimeAt_1 < car2.timeAt_2 + THETA)
-                            ) |
-                            (
-                            conflict[car0.from][car0.to][car2.from][car2.to] = 1 &
-                            conflict[car2.from][car2.to][car0.from][car0.to] = 2 &
-                            (car0.timeAt_2 + THETA > car2.timeAt_2 & 
-                            car0.accelTimeAt_1 < car2.timeAt_3 + THETA)
-                            ) |
-                            (
-                            conflict[car0.from][car0.to][car2.from][car2.to] = 1 &
-                            conflict[car2.from][car2.to][car0.from][car0.to] = 3 &
-                            (car0.timeAt_2 + THETA > car2.timeAt_3 & 
-                            car0.accelTimeAt_1 < car2.timeAt_4 + THETA)
-                            ) |
-                            (
-                            conflict[car0.from][car0.to][car2.from][car2.to] = 1 &
-                            conflict[car2.from][car2.to][car0.from][car0.to] = 4 &
-                            (car0.timeAt_2 + THETA > car2.timeAt_4 & 
-                            car0.accelTimeAt_1 < car2.timeAt_5 + THETA)
-                            ) |
-                        
-                            (
-                            conflict[car0.from][car0.to][car2.from][car2.to] = 2 &
-                            conflict[car2.from][car2.to][car0.from][car0.to] = 1 &
-                            (car0.timeAt_3 + THETA > car2.timeAt_1 & 
-                            car0.accelTimeAt_2 < car2.timeAt_2 + THETA)
-                            ) |
-                            (
-                            conflict[car0.from][car0.to][car2.from][car2.to] = 2 &
-                            conflict[car2.from][car2.to][car0.from][car0.to] = 2 &
-                            (car0.timeAt_3 + THETA > car2.timeAt_2 & 
-                            car0.accelTimeAt_2 < car2.timeAt_3 + THETA)
-                            ) |
-                            (
-                            conflict[car0.from][car0.to][car2.from][car2.to] = 2 &
-                            conflict[car2.from][car2.to][car0.from][car0.to] = 3 &
-                            (car0.timeAt_3 + THETA > car2.timeAt_3 & 
-                            car0.accelTimeAt_2 < car2.timeAt_4 + THETA)
-                            ) |
-                            (
-                            conflict[car0.from][car0.to][car2.from][car2.to] = 2 &
-                            conflict[car2.from][car2.to][car0.from][car0.to] = 4 &
-                            (car0.timeAt_3 + THETA > car2.timeAt_4 & 
-                            car0.accelTimeAt_2 < car2.timeAt_5 + THETA)
-                            ) |
-                        
-                            (
-                            conflict[car0.from][car0.to][car2.from][car2.to] = 3 &
-                            conflict[car2.from][car2.to][car0.from][car0.to] = 1 &
-                            (car0.timeAt_4 + THETA > car2.timeAt_1 & 
-                            car0.accelTimeAt_3 < car2.timeAt_2 + THETA)
-                            ) |
-                            (
-                            conflict[car0.from][car0.to][car2.from][car2.to] = 3 &
-                            conflict[car2.from][car2.to][car0.from][car0.to] = 2 &
-                            (car0.timeAt_4 + THETA > car2.timeAt_2 & 
-                            car0.accelTimeAt_3 < car2.timeAt_3 + THETA)
-                            ) |
-                            (
-                            conflict[car0.from][car0.to][car2.from][car2.to] = 3 &
-                            conflict[car2.from][car2.to][car0.from][car0.to] = 3 &
-                            (car0.timeAt_4 + THETA > car2.timeAt_3 & 
-                            car0.accelTimeAt_3 < car2.timeAt_4 + THETA)
-                            ) |
-                            (
-                            conflict[car0.from][car0.to][car2.from][car2.to] = 3 &
-                            conflict[car2.from][car2.to][car0.from][car0.to] = 4 &
-                            (car0.timeAt_4 + THETA > car2.timeAt_4 & 
-                            car0.accelTimeAt_3 < car2.timeAt_5 + THETA)
-                            ) |
-                        
-                            (
-                            conflict[car0.from][car0.to][car2.from][car2.to] = 4 &
-                            conflict[car2.from][car2.to][car0.from][car0.to] = 1 &
-                            (car0.timeAt_5 + THETA > car2.timeAt_1 & 
-                            car0.accelTimeAt_4 < car2.timeAt_2 + THETA)
-                            ) |
-                            (
-                            conflict[car0.from][car0.to][car2.from][car2.to] = 4 &
-                            conflict[car2.from][car2.to][car0.from][car0.to] = 2 &
-                            (car0.timeAt_5 + THETA > car2.timeAt_2 & 
-                            car0.accelTimeAt_4 < car2.timeAt_3 + THETA)
-                            ) |
-                            (
-                            conflict[car0.from][car0.to][car2.from][car2.to] = 4 &
-                            conflict[car2.from][car2.to][car0.from][car0.to] = 3 &
-                            (car0.timeAt_5 + THETA > car2.timeAt_3 & 
-                            car0.accelTimeAt_4 < car2.timeAt_4 + THETA)
-                            ) |
-                            (
-                            conflict[car0.from][car0.to][car2.from][car2.to] = 4 &
-                            conflict[car2.from][car2.to][car0.from][car0.to] = 4 &
-                            (car0.timeAt_5 + THETA > car2.timeAt_4 & 
-                            car0.accelTimeAt_4 < car2.timeAt_5 + THETA)
+                            (car0.accelTimeAt_4 - THETA > car1.timeAt_4 & car0.accelTimeAt_4 + THETA < car1.timeAt_5) 
+                            |
+                            (car1.timeAt_4 - THETA > car0.accelTimeAt_4 & car1.timeAt_4 + THETA < car0.accelTimeAt_5)
+                            )
                             ) | FALSE
                     ) 
                     : car0.dec_param;
@@ -249,7 +187,8 @@ MODULE main
         
             
                 next(car1.decision[0]) := case
-                    car1.priority < car0.priority & 
+                    ((car1.priority < car0.priority) | 
+                    (car1.priority = car0.priority & car1.id > car0.id)) & 
                     !car0.EXITING &
                     conflict[car1.from][car1.to][car0.from][car0.to] > car1.tcl_index &
                     (
@@ -258,444 +197,154 @@ MODULE main
                             (
                             conflict[car1.from][car1.to][car0.from][car0.to] = 1 &
                             conflict[car0.from][car0.to][car1.from][car1.to] = 1 &
-                            (car1.timeAt_2 + THETA > car0.timeAt_1 & 
-                            car1.accelTimeAt_1 < car0.timeAt_2 + THETA)
+                            (
+                            (car1.accelTimeAt_1 - THETA > car0.timeAt_1 & car1.accelTimeAt_1 + THETA < car0.timeAt_2) 
+                            |
+                            (car0.timeAt_1 - THETA > car1.accelTimeAt_1 & car0.timeAt_1 + THETA < car1.accelTimeAt_2)
+                            )
                             ) |
                             (
                             conflict[car1.from][car1.to][car0.from][car0.to] = 1 &
                             conflict[car0.from][car0.to][car1.from][car1.to] = 2 &
-                            (car1.timeAt_2 + THETA > car0.timeAt_2 & 
-                            car1.accelTimeAt_1 < car0.timeAt_3 + THETA)
+                            (
+                            (car1.accelTimeAt_1 - THETA > car0.timeAt_2 & car1.accelTimeAt_1 + THETA < car0.timeAt_3) 
+                            |
+                            (car0.timeAt_2 - THETA > car1.accelTimeAt_1 & car0.timeAt_2 + THETA < car1.accelTimeAt_2)
+                            )
                             ) |
                             (
                             conflict[car1.from][car1.to][car0.from][car0.to] = 1 &
                             conflict[car0.from][car0.to][car1.from][car1.to] = 3 &
-                            (car1.timeAt_2 + THETA > car0.timeAt_3 & 
-                            car1.accelTimeAt_1 < car0.timeAt_4 + THETA)
+                            (
+                            (car1.accelTimeAt_1 - THETA > car0.timeAt_3 & car1.accelTimeAt_1 + THETA < car0.timeAt_4) 
+                            |
+                            (car0.timeAt_3 - THETA > car1.accelTimeAt_1 & car0.timeAt_3 + THETA < car1.accelTimeAt_2)
+                            )
                             ) |
                             (
                             conflict[car1.from][car1.to][car0.from][car0.to] = 1 &
                             conflict[car0.from][car0.to][car1.from][car1.to] = 4 &
-                            (car1.timeAt_2 + THETA > car0.timeAt_4 & 
-                            car1.accelTimeAt_1 < car0.timeAt_5 + THETA)
+                            (
+                            (car1.accelTimeAt_1 - THETA > car0.timeAt_4 & car1.accelTimeAt_1 + THETA < car0.timeAt_5) 
+                            |
+                            (car0.timeAt_4 - THETA > car1.accelTimeAt_1 & car0.timeAt_4 + THETA < car1.accelTimeAt_2)
+                            )
                             ) |
                         
                             (
                             conflict[car1.from][car1.to][car0.from][car0.to] = 2 &
                             conflict[car0.from][car0.to][car1.from][car1.to] = 1 &
-                            (car1.timeAt_3 + THETA > car0.timeAt_1 & 
-                            car1.accelTimeAt_2 < car0.timeAt_2 + THETA)
+                            (
+                            (car1.accelTimeAt_2 - THETA > car0.timeAt_1 & car1.accelTimeAt_2 + THETA < car0.timeAt_2) 
+                            |
+                            (car0.timeAt_1 - THETA > car1.accelTimeAt_2 & car0.timeAt_1 + THETA < car1.accelTimeAt_3)
+                            )
                             ) |
                             (
                             conflict[car1.from][car1.to][car0.from][car0.to] = 2 &
                             conflict[car0.from][car0.to][car1.from][car1.to] = 2 &
-                            (car1.timeAt_3 + THETA > car0.timeAt_2 & 
-                            car1.accelTimeAt_2 < car0.timeAt_3 + THETA)
+                            (
+                            (car1.accelTimeAt_2 - THETA > car0.timeAt_2 & car1.accelTimeAt_2 + THETA < car0.timeAt_3) 
+                            |
+                            (car0.timeAt_2 - THETA > car1.accelTimeAt_2 & car0.timeAt_2 + THETA < car1.accelTimeAt_3)
+                            )
                             ) |
                             (
                             conflict[car1.from][car1.to][car0.from][car0.to] = 2 &
                             conflict[car0.from][car0.to][car1.from][car1.to] = 3 &
-                            (car1.timeAt_3 + THETA > car0.timeAt_3 & 
-                            car1.accelTimeAt_2 < car0.timeAt_4 + THETA)
+                            (
+                            (car1.accelTimeAt_2 - THETA > car0.timeAt_3 & car1.accelTimeAt_2 + THETA < car0.timeAt_4) 
+                            |
+                            (car0.timeAt_3 - THETA > car1.accelTimeAt_2 & car0.timeAt_3 + THETA < car1.accelTimeAt_3)
+                            )
                             ) |
                             (
                             conflict[car1.from][car1.to][car0.from][car0.to] = 2 &
                             conflict[car0.from][car0.to][car1.from][car1.to] = 4 &
-                            (car1.timeAt_3 + THETA > car0.timeAt_4 & 
-                            car1.accelTimeAt_2 < car0.timeAt_5 + THETA)
+                            (
+                            (car1.accelTimeAt_2 - THETA > car0.timeAt_4 & car1.accelTimeAt_2 + THETA < car0.timeAt_5) 
+                            |
+                            (car0.timeAt_4 - THETA > car1.accelTimeAt_2 & car0.timeAt_4 + THETA < car1.accelTimeAt_3)
+                            )
                             ) |
                         
                             (
                             conflict[car1.from][car1.to][car0.from][car0.to] = 3 &
                             conflict[car0.from][car0.to][car1.from][car1.to] = 1 &
-                            (car1.timeAt_4 + THETA > car0.timeAt_1 & 
-                            car1.accelTimeAt_3 < car0.timeAt_2 + THETA)
+                            (
+                            (car1.accelTimeAt_3 - THETA > car0.timeAt_1 & car1.accelTimeAt_3 + THETA < car0.timeAt_2) 
+                            |
+                            (car0.timeAt_1 - THETA > car1.accelTimeAt_3 & car0.timeAt_1 + THETA < car1.accelTimeAt_4)
+                            )
                             ) |
                             (
                             conflict[car1.from][car1.to][car0.from][car0.to] = 3 &
                             conflict[car0.from][car0.to][car1.from][car1.to] = 2 &
-                            (car1.timeAt_4 + THETA > car0.timeAt_2 & 
-                            car1.accelTimeAt_3 < car0.timeAt_3 + THETA)
+                            (
+                            (car1.accelTimeAt_3 - THETA > car0.timeAt_2 & car1.accelTimeAt_3 + THETA < car0.timeAt_3) 
+                            |
+                            (car0.timeAt_2 - THETA > car1.accelTimeAt_3 & car0.timeAt_2 + THETA < car1.accelTimeAt_4)
+                            )
                             ) |
                             (
                             conflict[car1.from][car1.to][car0.from][car0.to] = 3 &
                             conflict[car0.from][car0.to][car1.from][car1.to] = 3 &
-                            (car1.timeAt_4 + THETA > car0.timeAt_3 & 
-                            car1.accelTimeAt_3 < car0.timeAt_4 + THETA)
+                            (
+                            (car1.accelTimeAt_3 - THETA > car0.timeAt_3 & car1.accelTimeAt_3 + THETA < car0.timeAt_4) 
+                            |
+                            (car0.timeAt_3 - THETA > car1.accelTimeAt_3 & car0.timeAt_3 + THETA < car1.accelTimeAt_4)
+                            )
                             ) |
                             (
                             conflict[car1.from][car1.to][car0.from][car0.to] = 3 &
                             conflict[car0.from][car0.to][car1.from][car1.to] = 4 &
-                            (car1.timeAt_4 + THETA > car0.timeAt_4 & 
-                            car1.accelTimeAt_3 < car0.timeAt_5 + THETA)
+                            (
+                            (car1.accelTimeAt_3 - THETA > car0.timeAt_4 & car1.accelTimeAt_3 + THETA < car0.timeAt_5) 
+                            |
+                            (car0.timeAt_4 - THETA > car1.accelTimeAt_3 & car0.timeAt_4 + THETA < car1.accelTimeAt_4)
+                            )
                             ) |
                         
                             (
                             conflict[car1.from][car1.to][car0.from][car0.to] = 4 &
                             conflict[car0.from][car0.to][car1.from][car1.to] = 1 &
-                            (car1.timeAt_5 + THETA > car0.timeAt_1 & 
-                            car1.accelTimeAt_4 < car0.timeAt_2 + THETA)
+                            (
+                            (car1.accelTimeAt_4 - THETA > car0.timeAt_1 & car1.accelTimeAt_4 + THETA < car0.timeAt_2) 
+                            |
+                            (car0.timeAt_1 - THETA > car1.accelTimeAt_4 & car0.timeAt_1 + THETA < car1.accelTimeAt_5)
+                            )
                             ) |
                             (
                             conflict[car1.from][car1.to][car0.from][car0.to] = 4 &
                             conflict[car0.from][car0.to][car1.from][car1.to] = 2 &
-                            (car1.timeAt_5 + THETA > car0.timeAt_2 & 
-                            car1.accelTimeAt_4 < car0.timeAt_3 + THETA)
+                            (
+                            (car1.accelTimeAt_4 - THETA > car0.timeAt_2 & car1.accelTimeAt_4 + THETA < car0.timeAt_3) 
+                            |
+                            (car0.timeAt_2 - THETA > car1.accelTimeAt_4 & car0.timeAt_2 + THETA < car1.accelTimeAt_5)
+                            )
                             ) |
                             (
                             conflict[car1.from][car1.to][car0.from][car0.to] = 4 &
                             conflict[car0.from][car0.to][car1.from][car1.to] = 3 &
-                            (car1.timeAt_5 + THETA > car0.timeAt_3 & 
-                            car1.accelTimeAt_4 < car0.timeAt_4 + THETA)
+                            (
+                            (car1.accelTimeAt_4 - THETA > car0.timeAt_3 & car1.accelTimeAt_4 + THETA < car0.timeAt_4) 
+                            |
+                            (car0.timeAt_3 - THETA > car1.accelTimeAt_4 & car0.timeAt_3 + THETA < car1.accelTimeAt_5)
+                            )
                             ) |
                             (
                             conflict[car1.from][car1.to][car0.from][car0.to] = 4 &
                             conflict[car0.from][car0.to][car1.from][car1.to] = 4 &
-                            (car1.timeAt_5 + THETA > car0.timeAt_4 & 
-                            car1.accelTimeAt_4 < car0.timeAt_5 + THETA)
+                            (
+                            (car1.accelTimeAt_4 - THETA > car0.timeAt_4 & car1.accelTimeAt_4 + THETA < car0.timeAt_5) 
+                            |
+                            (car0.timeAt_4 - THETA > car1.accelTimeAt_4 & car0.timeAt_4 + THETA < car1.accelTimeAt_5)
+                            )
                             ) | FALSE
                     ) 
                     : car1.dec_param;
 
                     TRUE : car1.acc_param;
-                esac;
-            
-            
-                next(car1.decision[2]) := case
-                    car1.priority < car2.priority & 
-                    !car2.EXITING &
-                    conflict[car1.from][car1.to][car2.from][car2.to] > car1.tcl_index &
-                    (
-                    
-                        
-                            (
-                            conflict[car1.from][car1.to][car2.from][car2.to] = 1 &
-                            conflict[car2.from][car2.to][car1.from][car1.to] = 1 &
-                            (car1.timeAt_2 + THETA > car2.timeAt_1 & 
-                            car1.accelTimeAt_1 < car2.timeAt_2 + THETA)
-                            ) |
-                            (
-                            conflict[car1.from][car1.to][car2.from][car2.to] = 1 &
-                            conflict[car2.from][car2.to][car1.from][car1.to] = 2 &
-                            (car1.timeAt_2 + THETA > car2.timeAt_2 & 
-                            car1.accelTimeAt_1 < car2.timeAt_3 + THETA)
-                            ) |
-                            (
-                            conflict[car1.from][car1.to][car2.from][car2.to] = 1 &
-                            conflict[car2.from][car2.to][car1.from][car1.to] = 3 &
-                            (car1.timeAt_2 + THETA > car2.timeAt_3 & 
-                            car1.accelTimeAt_1 < car2.timeAt_4 + THETA)
-                            ) |
-                            (
-                            conflict[car1.from][car1.to][car2.from][car2.to] = 1 &
-                            conflict[car2.from][car2.to][car1.from][car1.to] = 4 &
-                            (car1.timeAt_2 + THETA > car2.timeAt_4 & 
-                            car1.accelTimeAt_1 < car2.timeAt_5 + THETA)
-                            ) |
-                        
-                            (
-                            conflict[car1.from][car1.to][car2.from][car2.to] = 2 &
-                            conflict[car2.from][car2.to][car1.from][car1.to] = 1 &
-                            (car1.timeAt_3 + THETA > car2.timeAt_1 & 
-                            car1.accelTimeAt_2 < car2.timeAt_2 + THETA)
-                            ) |
-                            (
-                            conflict[car1.from][car1.to][car2.from][car2.to] = 2 &
-                            conflict[car2.from][car2.to][car1.from][car1.to] = 2 &
-                            (car1.timeAt_3 + THETA > car2.timeAt_2 & 
-                            car1.accelTimeAt_2 < car2.timeAt_3 + THETA)
-                            ) |
-                            (
-                            conflict[car1.from][car1.to][car2.from][car2.to] = 2 &
-                            conflict[car2.from][car2.to][car1.from][car1.to] = 3 &
-                            (car1.timeAt_3 + THETA > car2.timeAt_3 & 
-                            car1.accelTimeAt_2 < car2.timeAt_4 + THETA)
-                            ) |
-                            (
-                            conflict[car1.from][car1.to][car2.from][car2.to] = 2 &
-                            conflict[car2.from][car2.to][car1.from][car1.to] = 4 &
-                            (car1.timeAt_3 + THETA > car2.timeAt_4 & 
-                            car1.accelTimeAt_2 < car2.timeAt_5 + THETA)
-                            ) |
-                        
-                            (
-                            conflict[car1.from][car1.to][car2.from][car2.to] = 3 &
-                            conflict[car2.from][car2.to][car1.from][car1.to] = 1 &
-                            (car1.timeAt_4 + THETA > car2.timeAt_1 & 
-                            car1.accelTimeAt_3 < car2.timeAt_2 + THETA)
-                            ) |
-                            (
-                            conflict[car1.from][car1.to][car2.from][car2.to] = 3 &
-                            conflict[car2.from][car2.to][car1.from][car1.to] = 2 &
-                            (car1.timeAt_4 + THETA > car2.timeAt_2 & 
-                            car1.accelTimeAt_3 < car2.timeAt_3 + THETA)
-                            ) |
-                            (
-                            conflict[car1.from][car1.to][car2.from][car2.to] = 3 &
-                            conflict[car2.from][car2.to][car1.from][car1.to] = 3 &
-                            (car1.timeAt_4 + THETA > car2.timeAt_3 & 
-                            car1.accelTimeAt_3 < car2.timeAt_4 + THETA)
-                            ) |
-                            (
-                            conflict[car1.from][car1.to][car2.from][car2.to] = 3 &
-                            conflict[car2.from][car2.to][car1.from][car1.to] = 4 &
-                            (car1.timeAt_4 + THETA > car2.timeAt_4 & 
-                            car1.accelTimeAt_3 < car2.timeAt_5 + THETA)
-                            ) |
-                        
-                            (
-                            conflict[car1.from][car1.to][car2.from][car2.to] = 4 &
-                            conflict[car2.from][car2.to][car1.from][car1.to] = 1 &
-                            (car1.timeAt_5 + THETA > car2.timeAt_1 & 
-                            car1.accelTimeAt_4 < car2.timeAt_2 + THETA)
-                            ) |
-                            (
-                            conflict[car1.from][car1.to][car2.from][car2.to] = 4 &
-                            conflict[car2.from][car2.to][car1.from][car1.to] = 2 &
-                            (car1.timeAt_5 + THETA > car2.timeAt_2 & 
-                            car1.accelTimeAt_4 < car2.timeAt_3 + THETA)
-                            ) |
-                            (
-                            conflict[car1.from][car1.to][car2.from][car2.to] = 4 &
-                            conflict[car2.from][car2.to][car1.from][car1.to] = 3 &
-                            (car1.timeAt_5 + THETA > car2.timeAt_3 & 
-                            car1.accelTimeAt_4 < car2.timeAt_4 + THETA)
-                            ) |
-                            (
-                            conflict[car1.from][car1.to][car2.from][car2.to] = 4 &
-                            conflict[car2.from][car2.to][car1.from][car1.to] = 4 &
-                            (car1.timeAt_5 + THETA > car2.timeAt_4 & 
-                            car1.accelTimeAt_4 < car2.timeAt_5 + THETA)
-                            ) | FALSE
-                    ) 
-                    : car1.dec_param;
-
-                    TRUE : car1.acc_param;
-                esac;
-        
-            
-                next(car2.decision[0]) := case
-                    car2.priority < car0.priority & 
-                    !car0.EXITING &
-                    conflict[car2.from][car2.to][car0.from][car0.to] > car2.tcl_index &
-                    (
-                    
-                        
-                            (
-                            conflict[car2.from][car2.to][car0.from][car0.to] = 1 &
-                            conflict[car0.from][car0.to][car2.from][car2.to] = 1 &
-                            (car2.timeAt_2 + THETA > car0.timeAt_1 & 
-                            car2.accelTimeAt_1 < car0.timeAt_2 + THETA)
-                            ) |
-                            (
-                            conflict[car2.from][car2.to][car0.from][car0.to] = 1 &
-                            conflict[car0.from][car0.to][car2.from][car2.to] = 2 &
-                            (car2.timeAt_2 + THETA > car0.timeAt_2 & 
-                            car2.accelTimeAt_1 < car0.timeAt_3 + THETA)
-                            ) |
-                            (
-                            conflict[car2.from][car2.to][car0.from][car0.to] = 1 &
-                            conflict[car0.from][car0.to][car2.from][car2.to] = 3 &
-                            (car2.timeAt_2 + THETA > car0.timeAt_3 & 
-                            car2.accelTimeAt_1 < car0.timeAt_4 + THETA)
-                            ) |
-                            (
-                            conflict[car2.from][car2.to][car0.from][car0.to] = 1 &
-                            conflict[car0.from][car0.to][car2.from][car2.to] = 4 &
-                            (car2.timeAt_2 + THETA > car0.timeAt_4 & 
-                            car2.accelTimeAt_1 < car0.timeAt_5 + THETA)
-                            ) |
-                        
-                            (
-                            conflict[car2.from][car2.to][car0.from][car0.to] = 2 &
-                            conflict[car0.from][car0.to][car2.from][car2.to] = 1 &
-                            (car2.timeAt_3 + THETA > car0.timeAt_1 & 
-                            car2.accelTimeAt_2 < car0.timeAt_2 + THETA)
-                            ) |
-                            (
-                            conflict[car2.from][car2.to][car0.from][car0.to] = 2 &
-                            conflict[car0.from][car0.to][car2.from][car2.to] = 2 &
-                            (car2.timeAt_3 + THETA > car0.timeAt_2 & 
-                            car2.accelTimeAt_2 < car0.timeAt_3 + THETA)
-                            ) |
-                            (
-                            conflict[car2.from][car2.to][car0.from][car0.to] = 2 &
-                            conflict[car0.from][car0.to][car2.from][car2.to] = 3 &
-                            (car2.timeAt_3 + THETA > car0.timeAt_3 & 
-                            car2.accelTimeAt_2 < car0.timeAt_4 + THETA)
-                            ) |
-                            (
-                            conflict[car2.from][car2.to][car0.from][car0.to] = 2 &
-                            conflict[car0.from][car0.to][car2.from][car2.to] = 4 &
-                            (car2.timeAt_3 + THETA > car0.timeAt_4 & 
-                            car2.accelTimeAt_2 < car0.timeAt_5 + THETA)
-                            ) |
-                        
-                            (
-                            conflict[car2.from][car2.to][car0.from][car0.to] = 3 &
-                            conflict[car0.from][car0.to][car2.from][car2.to] = 1 &
-                            (car2.timeAt_4 + THETA > car0.timeAt_1 & 
-                            car2.accelTimeAt_3 < car0.timeAt_2 + THETA)
-                            ) |
-                            (
-                            conflict[car2.from][car2.to][car0.from][car0.to] = 3 &
-                            conflict[car0.from][car0.to][car2.from][car2.to] = 2 &
-                            (car2.timeAt_4 + THETA > car0.timeAt_2 & 
-                            car2.accelTimeAt_3 < car0.timeAt_3 + THETA)
-                            ) |
-                            (
-                            conflict[car2.from][car2.to][car0.from][car0.to] = 3 &
-                            conflict[car0.from][car0.to][car2.from][car2.to] = 3 &
-                            (car2.timeAt_4 + THETA > car0.timeAt_3 & 
-                            car2.accelTimeAt_3 < car0.timeAt_4 + THETA)
-                            ) |
-                            (
-                            conflict[car2.from][car2.to][car0.from][car0.to] = 3 &
-                            conflict[car0.from][car0.to][car2.from][car2.to] = 4 &
-                            (car2.timeAt_4 + THETA > car0.timeAt_4 & 
-                            car2.accelTimeAt_3 < car0.timeAt_5 + THETA)
-                            ) |
-                        
-                            (
-                            conflict[car2.from][car2.to][car0.from][car0.to] = 4 &
-                            conflict[car0.from][car0.to][car2.from][car2.to] = 1 &
-                            (car2.timeAt_5 + THETA > car0.timeAt_1 & 
-                            car2.accelTimeAt_4 < car0.timeAt_2 + THETA)
-                            ) |
-                            (
-                            conflict[car2.from][car2.to][car0.from][car0.to] = 4 &
-                            conflict[car0.from][car0.to][car2.from][car2.to] = 2 &
-                            (car2.timeAt_5 + THETA > car0.timeAt_2 & 
-                            car2.accelTimeAt_4 < car0.timeAt_3 + THETA)
-                            ) |
-                            (
-                            conflict[car2.from][car2.to][car0.from][car0.to] = 4 &
-                            conflict[car0.from][car0.to][car2.from][car2.to] = 3 &
-                            (car2.timeAt_5 + THETA > car0.timeAt_3 & 
-                            car2.accelTimeAt_4 < car0.timeAt_4 + THETA)
-                            ) |
-                            (
-                            conflict[car2.from][car2.to][car0.from][car0.to] = 4 &
-                            conflict[car0.from][car0.to][car2.from][car2.to] = 4 &
-                            (car2.timeAt_5 + THETA > car0.timeAt_4 & 
-                            car2.accelTimeAt_4 < car0.timeAt_5 + THETA)
-                            ) | FALSE
-                    ) 
-                    : car2.dec_param;
-
-                    TRUE : car2.acc_param;
-                esac;
-            
-                next(car2.decision[1]) := case
-                    car2.priority < car1.priority & 
-                    !car1.EXITING &
-                    conflict[car2.from][car2.to][car1.from][car1.to] > car2.tcl_index &
-                    (
-                    
-                        
-                            (
-                            conflict[car2.from][car2.to][car1.from][car1.to] = 1 &
-                            conflict[car1.from][car1.to][car2.from][car2.to] = 1 &
-                            (car2.timeAt_2 + THETA > car1.timeAt_1 & 
-                            car2.accelTimeAt_1 < car1.timeAt_2 + THETA)
-                            ) |
-                            (
-                            conflict[car2.from][car2.to][car1.from][car1.to] = 1 &
-                            conflict[car1.from][car1.to][car2.from][car2.to] = 2 &
-                            (car2.timeAt_2 + THETA > car1.timeAt_2 & 
-                            car2.accelTimeAt_1 < car1.timeAt_3 + THETA)
-                            ) |
-                            (
-                            conflict[car2.from][car2.to][car1.from][car1.to] = 1 &
-                            conflict[car1.from][car1.to][car2.from][car2.to] = 3 &
-                            (car2.timeAt_2 + THETA > car1.timeAt_3 & 
-                            car2.accelTimeAt_1 < car1.timeAt_4 + THETA)
-                            ) |
-                            (
-                            conflict[car2.from][car2.to][car1.from][car1.to] = 1 &
-                            conflict[car1.from][car1.to][car2.from][car2.to] = 4 &
-                            (car2.timeAt_2 + THETA > car1.timeAt_4 & 
-                            car2.accelTimeAt_1 < car1.timeAt_5 + THETA)
-                            ) |
-                        
-                            (
-                            conflict[car2.from][car2.to][car1.from][car1.to] = 2 &
-                            conflict[car1.from][car1.to][car2.from][car2.to] = 1 &
-                            (car2.timeAt_3 + THETA > car1.timeAt_1 & 
-                            car2.accelTimeAt_2 < car1.timeAt_2 + THETA)
-                            ) |
-                            (
-                            conflict[car2.from][car2.to][car1.from][car1.to] = 2 &
-                            conflict[car1.from][car1.to][car2.from][car2.to] = 2 &
-                            (car2.timeAt_3 + THETA > car1.timeAt_2 & 
-                            car2.accelTimeAt_2 < car1.timeAt_3 + THETA)
-                            ) |
-                            (
-                            conflict[car2.from][car2.to][car1.from][car1.to] = 2 &
-                            conflict[car1.from][car1.to][car2.from][car2.to] = 3 &
-                            (car2.timeAt_3 + THETA > car1.timeAt_3 & 
-                            car2.accelTimeAt_2 < car1.timeAt_4 + THETA)
-                            ) |
-                            (
-                            conflict[car2.from][car2.to][car1.from][car1.to] = 2 &
-                            conflict[car1.from][car1.to][car2.from][car2.to] = 4 &
-                            (car2.timeAt_3 + THETA > car1.timeAt_4 & 
-                            car2.accelTimeAt_2 < car1.timeAt_5 + THETA)
-                            ) |
-                        
-                            (
-                            conflict[car2.from][car2.to][car1.from][car1.to] = 3 &
-                            conflict[car1.from][car1.to][car2.from][car2.to] = 1 &
-                            (car2.timeAt_4 + THETA > car1.timeAt_1 & 
-                            car2.accelTimeAt_3 < car1.timeAt_2 + THETA)
-                            ) |
-                            (
-                            conflict[car2.from][car2.to][car1.from][car1.to] = 3 &
-                            conflict[car1.from][car1.to][car2.from][car2.to] = 2 &
-                            (car2.timeAt_4 + THETA > car1.timeAt_2 & 
-                            car2.accelTimeAt_3 < car1.timeAt_3 + THETA)
-                            ) |
-                            (
-                            conflict[car2.from][car2.to][car1.from][car1.to] = 3 &
-                            conflict[car1.from][car1.to][car2.from][car2.to] = 3 &
-                            (car2.timeAt_4 + THETA > car1.timeAt_3 & 
-                            car2.accelTimeAt_3 < car1.timeAt_4 + THETA)
-                            ) |
-                            (
-                            conflict[car2.from][car2.to][car1.from][car1.to] = 3 &
-                            conflict[car1.from][car1.to][car2.from][car2.to] = 4 &
-                            (car2.timeAt_4 + THETA > car1.timeAt_4 & 
-                            car2.accelTimeAt_3 < car1.timeAt_5 + THETA)
-                            ) |
-                        
-                            (
-                            conflict[car2.from][car2.to][car1.from][car1.to] = 4 &
-                            conflict[car1.from][car1.to][car2.from][car2.to] = 1 &
-                            (car2.timeAt_5 + THETA > car1.timeAt_1 & 
-                            car2.accelTimeAt_4 < car1.timeAt_2 + THETA)
-                            ) |
-                            (
-                            conflict[car2.from][car2.to][car1.from][car1.to] = 4 &
-                            conflict[car1.from][car1.to][car2.from][car2.to] = 2 &
-                            (car2.timeAt_5 + THETA > car1.timeAt_2 & 
-                            car2.accelTimeAt_4 < car1.timeAt_3 + THETA)
-                            ) |
-                            (
-                            conflict[car2.from][car2.to][car1.from][car1.to] = 4 &
-                            conflict[car1.from][car1.to][car2.from][car2.to] = 3 &
-                            (car2.timeAt_5 + THETA > car1.timeAt_3 & 
-                            car2.accelTimeAt_4 < car1.timeAt_4 + THETA)
-                            ) |
-                            (
-                            conflict[car2.from][car2.to][car1.from][car1.to] = 4 &
-                            conflict[car1.from][car1.to][car2.from][car2.to] = 4 &
-                            (car2.timeAt_5 + THETA > car1.timeAt_4 & 
-                            car2.accelTimeAt_4 < car1.timeAt_5 + THETA)
-                            ) | FALSE
-                    ) 
-                    : car2.dec_param;
-
-                    TRUE : car2.acc_param;
                 esac;
             
 
@@ -712,22 +361,48 @@ MODULE main
         
             
                 car0car1_crash := (car0.CROSSING & car1.CROSSING & car0.position = car1.position );
-                car0car2_crash := (car0.CROSSING & car2.CROSSING & car0.position = car2.position );
+
+        cars_exited := car0.EXITING& car1.EXITING;
+
+
+
+    LTLSPEC
+        ! (
+        G
+        
             
-                car1car2_crash := (car1.CROSSING & car2.CROSSING & car1.position = car2.position );
+                !car0car1_crash & TRUE
 
-        cars_exited := car0.EXITING& car1.EXITING& car2.EXITING;
+        &
+        
+        F cars_exited
+
+        &
+
+        G
+        
+            car0.speed != 0 |
+            car1.speed != 0 | FALSE
+        
+        &
+
+        G
+        
+            car0.acc > 0 |
+            car1.acc > 0 | FALSE
+
+        )
 
 
-    CTLSPEC
-        AF car0car1_crash
+
+
 
 
 MODULE car(from_in, to_in, speed_in, id_in, acc_in, dec_in)
     DEFINE
 
     lanes := 2;
-    max_tcl_index := 4; --lanes + 2;
+    max_tcl_index := lanes + 2;
     max_position := (lanes * lanes) + 1;
     max_speed := 8;
 
@@ -745,9 +420,9 @@ MODULE car(from_in, to_in, speed_in, id_in, acc_in, dec_in)
 
 
     
+        acc := min(decision[0], decision[1]); --TO BE GENERALIZED
     
-        acc := min(min(decision[0], decision[1]), decision[2]); --TO BE GENERALIZED
-    
+
     acc_param := acc_in;
     dec_param := dec_in;
 
@@ -4118,7 +3793,7 @@ MODULE car(from_in, to_in, speed_in, id_in, acc_in, dec_in)
 
 
     FROZENVAR
-        id : 0..2;
+        id : 0..1;
         tcl : array 0..max_tcl_index of 0..max_position;
         
         from : 0..3; --{ toP, BOTtoM, RIGHT, LEFT};
@@ -4128,7 +3803,7 @@ MODULE car(from_in, to_in, speed_in, id_in, acc_in, dec_in)
     VAR
         speed : 0..max_speed;
         progress : 0..max_progress;
-        decision : array 0..(2) of { -1, 1 };
+        decision : array 0..(1) of { -1, 1 };
 
     ASSIGN
        init(tcl[0]) := 0;
@@ -4186,24 +3861,8 @@ MODULE car(from_in, to_in, speed_in, id_in, acc_in, dec_in)
             from = 3 & to = 2 : 5;
             from = 3 & to = 0 : 2;
         esac;
-        init(tcl[4]) := case
-            from = 2 & to = 2 : 5;
-            from = 0 & to = 0 : 5;
-            from = 1 & to = 1 : 5;
-            from = 3 & to = 3 : 5;
-            from = 2 & to = 0 : 5;
-            from = 2 & to = 1 : 5;
-            from = 2 & to = 3 : 5;
-            from = 0 & to = 2 : 5;
-            from = 0 & to = 3 : 5;
-            from = 0 & to = 1 : 5;
-            from = 1 & to = 3 : 5;
-            from = 1 & to = 0 : 5;
-            from = 1 & to = 2 : 5;
-            from = 3 & to = 1 : 5;
-            from = 3 & to = 2 : 5;
-            from = 3 & to = 0 : 5;
-        esac;
+        init(tcl[4]) := 5;
+    
 
         init(priority) := 50 - timeAt_1;
 
@@ -4225,7 +3884,6 @@ MODULE car(from_in, to_in, speed_in, id_in, acc_in, dec_in)
             
                 init(decision[0]) := acc_in;
                 init(decision[1]) := acc_in;
-                init(decision[2]) := acc_in;
 
             next(decision[id_in]) := acc_in;
         

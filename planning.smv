@@ -15,6 +15,18 @@ MODULE main
 
         cars_exited := #list(&) Y in 0..(num_cars-1) { carY.EXITING };
 
+        -- cell cleared
+        #for [i] in 1..(lanes+2) {
+        	cleared_[i] := #list(&) [j] in 0..num_cars-1 { car[j].position != [i] };
+        }
+
+        -- car occupies cell
+        #for [i] in 0..num_cars-1{
+        	#for CELL in 1..(lanes+2) {
+        		car[i]_isIn_CELL := car[i].position = CELL;
+        	}
+        }
+
 
     VAR
     	#for X in 0..(num_cars-1) {
@@ -38,8 +50,35 @@ MODULE main
         #for X in 0..(num_cars-2) {
             #for Y in (X+1)..(num_cars-1) { 
                 carXcarY_crash |
-            }
-        } G !cars_exited)
+            } 
+        } FALSE) | G !cars_exited 
+
+        --|
+
+        --! G(
+        --#for CELL in 1..lanes+2 {
+        --	#for [i] in 0..num_cars-1 {
+        --		( car[i]_isIn_CELL -> X ( car[i]_isIn_CELL | cleared_CELL ) ) --&
+        --	}
+--
+        --} TRUE )
+
+        --|
+--
+        --G (
+        --#for [i] in 0..num_cars-1 {
+        --	car[i].speed != 0 | 
+        --} FALSE
+        --)
+
+        
+
+        --#for CELL in 1..lanes+2 {
+		--	#for [i] in 0..num_cars-1 {
+		--		car[i].position == CELL -> X ( cleared_CELL )
+		--	}
+--
+        --)
 
 
 

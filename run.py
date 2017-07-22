@@ -4,7 +4,7 @@ from preprocess import Settings
 
 lanes = 2
 max_speed = 8
-speed = [8, 4, 7]
+speed = [5, 6, 7]
 progress = [0, 0, 0]
 num_cars = 2
 from_dir = ['RIGHT', 'BOTTOM', 'TOP']
@@ -21,7 +21,6 @@ global_settings = Settings(lanes, speed, progress, num_cars, max_speed, from_dir
 
 
 def run_model(model: str, settings, out: str = None, append = 'w'):
-    model = 'planning'
     print('\n\n------- '+model.upper()+' ---------\n')
     outname = preprocess.write_processed_model(model, settings)
     preprocess.compile_NuSMV(outname)
@@ -34,14 +33,14 @@ def run_model(model: str, settings, out: str = None, append = 'w'):
 
 
 def run_protocol(settings = global_settings, out: str = None, append = 'w'):
-        run_model('protocol', settings, global_settings, out, append)
+    run_model('protocol', settings, out, append)
 
 
 def run_planning(settings = global_settings, out: str = None, append = 'w'):
     run_model('planning', settings, out, append)
 
-# 3*3*4*4*2*2 = 9 * 16 4 * < 160 * 4 = 640 
-def run_planning_all_configurations():
+def run_planning_2cars_configurations():
+    # 3*3*4*4*2*2 = 9 * 16 4 * < 160 * 4 = 640 
     from0 = 'BOTTOM' # in order to break symmetries.
     for to0 in directions:
         if from0 == to0 : continue
@@ -60,7 +59,8 @@ def run_planning_all_configurations():
 
                                 run_planning(settings, 'planning_results.txt', append = 'a')
 
-
-run_planning_all_configurations()
+# run_planning()
+run_protocol()
+# run_planning_all_configurations()
 
 

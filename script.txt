@@ -1,0 +1,11 @@
+We'll briefly present the context.... of the problem
+Then we will describe how .. solutions in the modeling step.
+In point 3 and 4 we'll talk about our 
+
+How is a vehicle modeled ?
+Holds information about its motion and position :
+acceleration
+speed
+position
+desired trajectory (Trajectory Cell List)
+It is a passive element. It can evolve, but it’s blind to other elements’ behaviour.

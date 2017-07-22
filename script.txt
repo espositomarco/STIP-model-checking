@@ -31,11 +31,11 @@ These are the values represented in our model, which tries to represent reality 
 Discretization
 In our model ..
 
-The motion of a car inside the single cell is represented by an integer value, that we called progress. The progress of a car increase every step by its speed, when it reaches the threshold value, the vehicles goes to the next cell of its trajectory
+The motion of a vehicle inside the single cell is represented by an integer value, that we called progress. The progress of a car increase every step by its speed, when it reaches the threshold value, the vehicles goes to the next cell of its trajectory
 
-The evolution of the entire system is of course represented in a sequence of finite time steps. Every time step .... of actual time. This is .. since in the reference paper the assumption in that vehicle communication happens times every second o 0.1 s
+The evolution of the entire system is of course represented in a sequence of finite time steps. Every time step .... of actual time. This is .. since in the reference paper the assumption in that vehicle communication happens every tenth of a second
 
-As a consequence of this settings, we have that position, speed and acceleration can only take integer values, bounded by a maximum and a minimum
+As a consequence of this setting, we have that position, speed and acceleration can only take integer values, bounded by a maximum and a minimum
 Hence the number of possible states is finite
 
 This is the analytic expression of the vehicle motion in the general case in which it is accelerating o decelerating at constant rate.
@@ -44,18 +44,43 @@ This equation will be needed later for the protocol implementation.
 But before that, let's talk about the planning approach
 
 The first question we need to ask is:
-'Given our discretized model, is still possible for every configuration to let vehicle cross safely?'
-'Can we satisfy the safties and liveness of the paper? Or we lost something in the modeling?'
+'Given our discretized model, is still possible for every configuration to let vehicle safely cross the intersection?'
+'Can we satisfy the safety and liveness of the paper? Or we lost something in the modeling?'
 
-We can answer this questions by first modeling the world, but without specifying the protocol. So the intersection has no rules to follow, it can change vehicles' speeds in any way.
+We can answer this questions by modeling the world, but without specifying the protocol. So the intersection has no rules to follow, it can change vehicles' speeds in any way.
 The model checker will find a correct evolution for us
 
-Let's see how it can be done.
+Let's see how this can be done.
 This is what we want to find out:
 From all possible ..., there exists a path such that
 - no collisions between vehicles
-- eventually every vehicles leaves the intersection
-- 
+- eventually every vehicle leaves the intersection
+- and then "too close" which means that when a cell is cleared by a 
+crossing car, that cell shouldn't be occupied by another car in the instant immidiately after. It's too risky, the cell should be clear for some time, to increase safety 
+
+So we ask the model checker to find a counterexample to the following LTL statement
+
+The sequence of states returned by the model checker is a correct plan!
+and this is an example for a possible intial state
+
+This approach worked surprisingly well: It didn'f always find the best solution, but always found a good solution (where shoreter si better)
+Our explanation is that underlying sat-solver doesn't explores all possible solution, but uses good heurstics in order to find a solution which isn't too deep
+
+
+
+ model checker found a plan for every possible configuration with 2 or 3 cars
+
+			 t1 f2  t2  s1  s2  p1   p2
+2 vehicles : 4 * 2 * 4 * 4 * 4 * 2 * 2 = 2048 states in 17 minutes
+					t3 f3 s1 p1
+3 vehicles : 2048 *  4  3  4  2 = 35.000 states in 21 hours
+
+We proofed that with small amount of vehicles, a working protocol is still possible within this model
+
+The planning approach is simply too slow, scales poorly
+
+
+
 
 
 

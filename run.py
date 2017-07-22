@@ -6,7 +6,7 @@ lanes = 2
 max_speed = 8
 speed = [5, 6, 7]
 progress = [0, 0, 0]
-num_cars = 2
+num_cars = 3
 from_dir = ['RIGHT', 'BOTTOM', 'TOP']
 to_dir   = ['BOTTOM', 'LEFT', 'BOTTOM']
 acc_param = 1
@@ -59,8 +59,8 @@ def run_planning_2cars_configurations():
 
                                 run_planning(settings, 'planning_results.txt', append = 'a')
 
-# run_planning()
-run_protocol()
+run_planning()
+# run_protocol()
 # run_planning_all_configurations()
 
 

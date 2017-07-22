@@ -1,6 +1,35 @@
 We'll briefly present the context.... of the problem
 Then we will describe how .. solutions in the modeling step.
-In point 3 and 4 we'll talk about our 
+In point 3 and 4 we'll talk about our two approaches: the solving via planning and the actual implementation of the protocol.
+
+Our work is inspired by the paper 'titolo' by 'autori'...
+It deals with traffic control in intersection, in the case of autonomous vehicles.
+The inspiration of this work comes from the fact that intersection are the most dangerous structures in transportation and also the bottleneck since they require vehicles to slow down or stop.
+So, an ideal solution would guarantee the safety of the intersection, while maximizing the throughput.
+In the paper where the protocol is presented, is assumed that vehicles are autonomous and can communicate with each other.
+
+The assumption about the world described in the reference paper are that
+- Messages between vehicles do not get lost.
+- A message is sent every tenth of a second.
+- Vehicles always have perfect information about their position and the environment, thanks to GPS and digital maps.
+- All vehicles have similar dimensions and shape.
+
+Here's instead a picture of an intersection. As you can see the intersection is thought as a grid of cells: one cell for every intersection between lanes.
+
+Let's talk about our modeling
+We start with the modeling of vehicle:
+The vehicle holds informations only about its motion and position, which are: acceleration, speed, position and desired trajectory. This is called Trajectory Cell List in the paper, or 'tcl'
+The single vehicle is a passive element. It can evolve, but it’s blind to other elements’ behavior.
+
+# add slide
+This is how the state of a car evolves
+
+The intersection as we modeled receives the information from all the vehicles. It can command each vehicle to change its acceleration.
+Its job is to adjust the car motion in order to guarantee safety.
+These are the values represented in our model, which tries to represent reality as much as possible.
+
+Discretization
+In our model 
 
 How is a vehicle modeled ?
 Holds information about its motion and position :

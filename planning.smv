@@ -53,15 +53,14 @@ MODULE main
             } 
         } FALSE) | G !cars_exited 
 
-        --|
+        |
 
-        --! G(
-        --#for CELL in 1..lanes+2 {
-        --	#for [i] in 0..num_cars-1 {
-        --		( car[i]_isIn_CELL -> X ( car[i]_isIn_CELL | cleared_CELL ) ) --&
-        --	}
---
-        --} TRUE )
+        ! G(
+        #for CELL in 1..lanes+2 {
+        	#for [i] in 0..num_cars-1 {
+        		( car[i]_isIn_CELL -> X ( car[i]_isIn_CELL | cleared_CELL ) ) &
+        	}
+        } TRUE )
 
         --|
 --

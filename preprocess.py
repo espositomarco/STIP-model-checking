@@ -1,5 +1,5 @@
 # Usage of preprocess.py (Python3 required):
-# > python preprocess.py filename.smv
+# > python3 preprocess.py filename.smv
 
 import sys
 import os
@@ -20,6 +20,7 @@ def int_direction(direction: str) -> int:
 
 def int_direction_list(directions: List[str]) -> List[int]:
     return [int_direction(x) for x in directions ]
+
 
 
 lanes = 2
@@ -246,7 +247,7 @@ def planning(speeds_in: List[int], from_in: List[str], to_in: List[str], model: 
     with open(output_name, 'w') as output_file:
         output_file.write(processed_model)
 
-    command = "time /Users/giacomo/dev/NuSMV-2.6.0-Darwin/bin/NuSMV "+output_name+" > log.txt"
+    command = "time NuSMV "+output_name+" > log.txt"
     print('command:', command)
     os.system(command)
     # print('tutto ok')
@@ -263,7 +264,7 @@ def planning(speeds_in: List[int], from_in: List[str], to_in: List[str], model: 
 
 
 def compile_NuSMV(filename: str, logfile: str = 'log.txt'):
-    command = "time /Users/giacomo/dev/NuSMV-2.6.0-Darwin/bin/NuSMV " + filename + " > " + logfile
+    command = "time NuSMV -r " + filename + " > " + logfile
     print('compiling NuSMV model:', command)
     os.system(command)
 

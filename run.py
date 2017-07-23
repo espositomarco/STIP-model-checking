@@ -6,25 +6,28 @@ lanes = 2
 max_speed = 8
 speed = [5, 6, 7]
 progress = [0, 0, 0]
-num_cars = 3
+num_cars = 4
 from_dir = ['RIGHT', 'BOTTOM', 'TOP']
 to_dir   = ['BOTTOM', 'LEFT', 'BOTTOM']
 acc_param = 1
 dec_param = -1
 max_time = 50
-cell_progress = 30;
+cell_progress = 30
+theta = 1
+
+LOGFILE = "log2.txt"
 
 directions = ['TOP', 'RIGHT', 'BOTTOM', 'LEFT']
 
-global_settings = Settings(lanes, speed, progress, num_cars, max_speed, from_dir, to_dir, acc_param, dec_param, max_time, cell_progress)
+global_settings = Settings(lanes, speed, progress, num_cars, max_speed, from_dir, to_dir, acc_param, dec_param, max_time, cell_progress, theta)
 
 
 
 def run_model(model: str, settings, out: str = None, append = 'w'):
     print('\n\n------- '+model.upper()+' ---------\n')
     outname = preprocess.write_processed_model(model, settings)
-    preprocess.compile_NuSMV(outname)
-    anim = animation.animate_logfile('log.txt', settings)
+    preprocess.compile_NuSMV(outname, logfile=LOGFILE)
+    anim = animation.animate_logfile(LOGFILE, settings)
     if out == None:
         print(anim)
     else:
@@ -59,8 +62,8 @@ def run_planning_2cars_configurations():
 
                                 run_planning(settings, 'planning_results.txt', append = 'a')
 
-run_planning()
-# run_protocol()
+#run_planning()
+run_protocol()
 # run_planning_all_configurations()
 
 

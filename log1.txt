@@ -1,0 +1,19 @@
+*** This is NuSMV 2.6.0 (compiled on Wed Oct 14 15:36:56 2015)
+*** Enabled addons are: compass
+*** For more information on NuSMV see <http://nusmv.fbk.eu>
+*** or email to <nusmv-users@list.fbk.eu>.
+*** Please report bugs to <Please report bugs to <nusmv-users@fbk.eu>>
+
+*** Copyright (c) 2010-2014, Fondazione Bruno Kessler
+
+*** This version of NuSMV is linked to the CUDD library version 2.4.1
+*** Copyright (c) 1995-2004, Regents of the University of Colorado
+
+*** This version of NuSMV is linked to the MiniSat SAT solver. 
+*** See http://minisat.se/MiniSat.html
+*** Copyright (c) 2003-2006, Niklas Een, Niklas Sorensson
+*** Copyright (c) 2007-2010, Niklas Sorensson
+
+-- specification ((((car0.from != car0.to & car1.from != car1.to) & car2.from != car2.to) & car3.from != car3.to) -> ((((((((((((( G !car0car1_crash & !car0car2_crash) & !car0car3_crash) & !car1car2_crash) & !car1car3_crash) & !car2car3_crash) & TRUE) &  F cars_exited) &  G ((((car0.speed != 0 | car1.speed != 0) | car2.speed != 0) | car3.speed != 0) | FALSE)) &  G car0.acc >= 0) | car1.acc >= 0) | car2.acc >= 0) | car3.acc >= 0) | (FALSE &  G (((((((((((((((((car0_isIn_1 ->  X (car0_isIn_1 | cleared_1)) & (car1_isIn_1 ->  X (car1_isIn_1 | cleared_1))) & (car2_isIn_1 ->  X (car2_isIn_1 | cleared_1))) & (car3_isIn_1 ->  X (car3_isIn_1 | cleared_1))) & (car0_isIn_2 ->  X (car0_isIn_2 | cleared_2))) & (car1_isIn_2 ->  X (car1_isIn_2 | cleared_2))) & (car2_isIn_2 ->  X (car2_isIn_2 | cleared_2))) & (car3_isIn_2 ->  X (car3_isIn_2 | cleared_2))) & (car0_isIn_3 ->  X (car0_isIn_3 | cleared_3))) & (car1_isIn_3 ->  X (car1_isIn_3 | cleared_3))) & (car2_isIn_3 ->  X (car2_isIn_3 | cleared_3))) & (car3_isIn_3 ->  X (car3_isIn_3 | cleared_3))) & (car0_isIn_4 ->  X (car0_isIn_4 | cleared_4))) & (car1_isIn_4 ->  X (car1_isIn_4 | cleared_4))) & (car2_isIn_4 ->  X (car2_isIn_4 | cleared_4))) & (car3_isIn_4 ->  X (car3_isIn_4 | cleared_4))) & TRUE))))  is true
+system diameter: 44
+reachable states: 492522 (2^18.9098) out of 3.82487e+46 (2^154.744)

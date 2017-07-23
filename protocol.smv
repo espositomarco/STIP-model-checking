@@ -22,7 +22,7 @@ MODULE main
 
         VAR
         #for [i] in 0..num_cars-1 {
-            car[i] : car( #{from_dir[[i]]}, #{to_dir[[i]]}, #{speed[[i]]}, [i], #{acc_param}, #{dec_param} );
+            car[i] : car( [i], #{acc_param}, #{dec_param} );
         }
 
     ASSIGN
@@ -73,7 +73,17 @@ MODULE main
 
     LTLSPEC
         -- safety: no crashes
+<<<<<<< Updated upstream
         (
+=======
+    #and [i] in 0..num_cars-2 {
+        #and [j] in [i]+1..num_cars-1 {
+            car[i].from != car[j].from
+        }
+    }
+    ->
+    (
+>>>>>>> Stashed changes
         G
         #for [i] in 0..num_cars-2 {
             #for [j] in [i]+1..num_cars-1 {
@@ -102,7 +112,6 @@ MODULE main
             car[i].acc >= 0 |
         } FALSE
 
-        )
 
         &
 
@@ -112,7 +121,11 @@ MODULE main
                 ( car[i]_isIn_CELL -> X ( car[i]_isIn_CELL | cleared_CELL ) ) &
             }
         } TRUE )
+<<<<<<< Updated upstream
 
+=======
+    )
+>>>>>>> Stashed changes
 
 
 
@@ -124,7 +137,7 @@ MODULE main
     --} G !cars_exited)
 
 
-MODULE car(from_in, to_in, speed_in, id_in, acc_in, dec_in)
+MODULE car(id_in, acc_in, dec_in)
     DEFINE
 
     lanes := #{lanes};
@@ -150,6 +163,9 @@ MODULE car(from_in, to_in, speed_in, id_in, acc_in, dec_in)
     }
     #if num_cars == 3 {
         acc := min(min(decision[0], decision[1]), decision[2]); --TO BE GENERALIZED
+    }
+    #if num_cars == 4 {
+        acc := min(min(min(decision[0], decision[1]), decision[2]), decision[3]); --TO BE GENERALIZED
     }
 
     acc_param := acc_in;
@@ -196,8 +212,13 @@ MODULE car(from_in, to_in, speed_in, id_in, acc_in, dec_in)
         id : 0..#{num_cars-1};
         tcl : array 0..max_tcl_index of 0..max_position;
         
+<<<<<<< Updated upstream
         from : 0..3; --{ TOP, BOTTOM, RIGHT, LEFT};
         to : 0..3; --{ TOP, BOTTOM, RIGHT, LEFT};
+=======
+        from : 0..3; -- {TOP, BOTTOM, RIGHT, LEFT}
+        to : 0..3; -- {TOP, BOTTOM, RIGHT, LEFT}
+>>>>>>> Stashed changes
         priority : 0..#{max_time};
 
     VAR
@@ -215,6 +236,7 @@ MODULE car(from_in, to_in, speed_in, id_in, acc_in, dec_in)
         init(priority) := #{max_time} - timeAt_1;
 
         init(from) := case 
+<<<<<<< Updated upstream
             id = 0 : from_in;
             TRUE : {1,2,3};
         esac;
@@ -222,6 +244,15 @@ MODULE car(from_in, to_in, speed_in, id_in, acc_in, dec_in)
         init(speed) := {5,6, 7, 8};--speed_in; --{5, 6, 7, 8};
         
         init(progress) := {0,(cell_progress/2)};
+=======
+            id = 0 : 0;
+            TRUE : {1, 2, 3};
+        esac;
+        init(to) := {0, 1, 2, 3};--to_in;
+        init(speed) := {5, 6, 7, 8};--speed_in; --{5, 6, 7, 8};
+        
+        init(progress) := {0, cell_progress / 2};
+>>>>>>> Stashed changes
 
         
         -- NEXTs --
@@ -236,6 +267,6 @@ MODULE car(from_in, to_in, speed_in, id_in, acc_in, dec_in)
                 init(decision[Index]) := acc_in;
             }
 
-        ---- The decision with respect to itself is always to accelerate
-            next(decision[id_in]) := acc_in;
+        -- The decision with respect to itself is always to accelerate
+        next(decision[id_in]) := acc_in;
         

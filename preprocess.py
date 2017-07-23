@@ -8,7 +8,7 @@ from collections import namedtuple
 from precomputed_code import tcl_initialization2x2, tcl_initialization4x4, sqrt_init
 from typing import Iterable, List
 
-Settings = namedtuple('Settings', 'lanes speed progress num_cars max_speed from_dir to_dir acc_param dec_param max_time cell_progress')
+Settings = namedtuple('Settings', 'lanes speed progress num_cars max_speed from_dir to_dir acc_param dec_param max_time cell_progress theta')
 
 
 def int_direction(direction: str) -> int:
@@ -32,7 +32,8 @@ to_dir   = int_direction_list(['BOTTOM'   , 'LEFT'])
 acc_param = 1
 dec_param = -1
 max_time = 50
-cell_progress = 30;
+cell_progress = 30
+theta = 1
 
 
 def my_eval(expr: str):
@@ -55,7 +56,7 @@ def process_body_for(command: str, text : str) -> str :
     assert(in_str == 'in')
     result = ''
     # print('cmon0', text)
-    lines = text.splitlines()
+    # lines = text.splitlines()
     for i in range_string(range_str):
         # for line in lines:
             # print(line)
@@ -64,6 +65,23 @@ def process_body_for(command: str, text : str) -> str :
     message = '-- Code generated as <for> (preprocess.py)'
     return message, result
 
+def process_body_list(command:str, body: str) -> str:
+    list_str, varname, in_str, range_str = command.split(' ')
+    # print('listing:', command)
+    _, separator = list_str.split('(')
+    separator = separator[:-1]
+    assert(in_str == 'in')
+    result = ''
+    # print('cmon0', text)
+    # lines = body.splitlines()
+    for i in range_string(range_str):
+        # for line in lines:
+            # print(line)
+        result += body.replace(varname, str(i)) + ' ' + separator
+
+    # result = result[:-2]
+    message = '-- Code generated as <for> (preprocess.py)'
+    return message, result[:-len(separator)]
 
 def process_body_insert_string(insert_name: str) -> str:
     insert_string = my_eval(insert_name.strip())
@@ -99,30 +117,18 @@ def process_body_define(body: str) -> str:
     return message, '' #var + ' := ' + val + ';'
 
 
-def process_body_list(command:str, body: str) -> str:
-    list_str, varname, in_str, range_str = command.split(' ')
-    # print(list_str)
-    # print(list_str.split('(') )
-    _, separator = list_str.split('(')
-    separator = separator[:-1]
-    assert(in_str == 'in')
-    result = ''
-    # print('cmon0', text)
-    lines = body.splitlines()
-    for i in range_string(range_str):
-        # for line in lines:
-            # print(line)
-        result += body.strip().replace(varname, str(i)) + separator + ' '
-
-    # result = result[:-2]
-    message = '-- Code generated as <for> (preprocess.py)'
-    return message, result[:-2]
-
+# def preprocess_recursive()
 def process_body(command : str, body : str) -> str :
     if command.startswith('for'):
         return process_body_for(command, body)
     if command.startswith('list'):
         return process_body_list(command, body)
+    if command.startswith('and'):
+        m, res =  process_body_list(command.replace('and','list(&)'), body)
+        return m, '('+res+')'
+    if command.startswith('or'):
+        m, res =  process_body_list(command.replace('or','list(|)'), body)
+        return m, '('+res+')'
     if command == 'insert_string':
         return process_body_insert_string(body)
     if command == 'eval':
